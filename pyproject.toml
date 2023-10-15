@@ -30,4 +30,5 @@ features = ["pyo3/extension-module"]
 [tool.pdm.dev-dependencies]
 dev = [
     "ipython>=8.16.1",
+    "py-spy>=0.3.14",
 ]

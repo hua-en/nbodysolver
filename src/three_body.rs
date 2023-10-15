@@ -4,7 +4,7 @@ use itertools::izip;
 use pyo3::prelude::*;
 use ndarray::prelude::*;
 use ndarray::{Array, Data};
-use numpy::{IntoPyArray, PyArray1, TypeMustMatch, PyArrayLike1, ToPyArray, PyArray2};
+use numpy::{TypeMustMatch, PyArrayLike1, ToPyArray, PyArray2};
 use ndarray_linalg::norm;
 
 fn all_planet_acc_nbody<S: Data<Elem=f64>>(r_list: &[ArrayBase<S, Ix1>], m_list: &[f64], g:f64) -> Vec<Array1<f64>> {
@@ -66,7 +66,7 @@ type NBodyResults = (Vec<f64>, Vec<Vec<Array1<f64>>>, Vec<Vec<Array1<f64>>>, Vec
 fn simulate_nbody<S: Data<Elem=f64>>(r_list_init: &[ArrayBase<S, Ix1>], v_list_init: &[ArrayBase<S, Ix1>], m_list: &[f64], dt: f64, max_time: f64, g: f64) -> NBodyResults {
     // Create a copy of r_list and V_list
     let mut r_list: Vec<Array1<f64>> = r_list_init.iter().map(|v| v.to_owned()).collect();
-    let mut V_list: Vec<Array1<f64>> = v_list_init.iter().map(|v| v.to_owned()).collect();
+    let mut v_list: Vec<Array1<f64>> = v_list_init.iter().map(|v| v.to_owned()).collect();
 
     // Initialise all datasets
     let all_time = Array::range(0., max_time, dt);
@@ -82,8 +82,8 @@ fn simulate_nbody<S: Data<Elem=f64>>(r_list_init: &[ArrayBase<S, Ix1>], v_list_i
     // Calculate initial total energy
     // let r_list_view: Vec<ArrayView1<f64>> = r_list.iter().map(|v| v.view()).collect();
     // let v_list_view: Vec<ArrayView1<f64>> = V_list.iter().map(|v| v.view()).collect();
-    let (_, _, init_TE) = total_energy_nbody(&r_list, &V_list, m_list, g);
-    let abs_init_te = init_TE.abs();
+    let (_, _, init_te) = total_energy_nbody(&r_list, &v_list, m_list, g);
+    let abs_init_te = init_te.abs();
 
     for time in all_time {
         // Create arrayviews for current r_list and V_list
@@ -91,21 +91,21 @@ fn simulate_nbody<S: Data<Elem=f64>>(r_list_init: &[ArrayBase<S, Ix1>], v_list_i
         // let v_list_view: Vec<ArrayView1<f64>> = V_list.iter().map(|v| v.view()).collect();
 
         // Calculate current energy values
-        let (KE, PE, TE) = total_energy_nbody(&r_list, &V_list, m_list, g);
+        let (ke, pe, te) = total_energy_nbody(&r_list, &v_list, m_list, g);
 
         // Check if TE has changed too much from the initial total energy
         // If it has, stop the simulation early
-        let abs_te = TE.abs();
+        let abs_te = te.abs();
         if !(abs_init_te * 0.5 < abs_te && abs_te < abs_init_te * 1.5) {
             break;
         }
 
         // Calculate new position and velocity
-        let (new_r_list, new_V_list) = leapfrog(&r_list, &V_list, m_list, dt, g);
+        let (new_r_list, new_v_list) = leapfrog(&r_list, &v_list, m_list, dt, g);
 
         // Set position and velocity to next timestep
         let old_r_list = mem::replace(&mut r_list, new_r_list);
-        let old_v_list = mem::replace(&mut V_list, new_V_list);
+        let old_v_list = mem::replace(&mut v_list, new_v_list);
 
         // Record current position and time in dataset
         all_t.push(time);
@@ -113,21 +113,25 @@ fn simulate_nbody<S: Data<Elem=f64>>(r_list_init: &[ArrayBase<S, Ix1>], v_list_i
         all_v.push(old_v_list);
 
         // Record current energy values in dataset        
-        all_ke.push(KE);
-        all_pe.push(PE);
-        all_te.push(TE);
+        all_ke.push(ke);
+        all_pe.push(pe);
+        all_te.push(te);
     }
 
     (all_t, all_r, all_v, all_ke, all_pe, all_te)
 }
 
 #[pyfunction]
-pub fn call_nbody() {
+pub fn call_nbody<'py>(py: Python<'py>) -> (Vec<f64>, &'py PyArray2<f64>, &'py PyArray2<f64>, Vec<f64>, Vec<f64>, Vec<f64>) {
     let r_list = [array![0., 0., 0.], array![149.597e9, 0., 0.], array![149.981e9, 0., 0.]];
-    let V_list = [array![0., 0., 0.], array![0., 29800., 0.], array![0., 30800., 0.]];
+    let v_list = [array![0., 0., 0.], array![0., 29800., 0.], array![0., 30800., 0.]];
     let m_list = [1.989e30, 5.972e24, 7.3476e22];
-    let G = 6.6743e-11;
-    let results = simulate_nbody(&r_list, &V_list, &m_list, 1000., 31536000., G);
+    let g = 6.6743e-11;
+    let (all_t, all_r, all_v, all_ke, all_pe, all_te) = 
+        simulate_nbody(&r_list, &v_list, &m_list, 1000., 31536000., g);
+    let proc_r = process_data_nbody(all_r).to_pyarray(py);
+    let proc_v = process_data_nbody(all_v).to_pyarray(py);
+    (all_t, proc_r, proc_v, all_ke, all_pe, all_te)
 }
 
 fn explicit_euler() {
@@ -163,15 +167,9 @@ fn leapfrog<S: Data<Elem=f64>>(r_list: &[ArrayBase<S, Ix1>], v_list: &[ArrayBase
     (new_r_list, new_v_list)
 }
 
-fn process_pos_data_nbody(pos_data: Vec<Vec<Array1<f64>>>) -> Array2<f64> {
-    // Figure out a way to convert a list of lists of coordinates at various times to a list of lists of the separated coordinates
-    // i.e [[(x10, y10, z10), (x20, y20, z20), ...], [(x11, y11, z11), ...]] => 
-    // [[[x10, x11, ...], [y10, y11, ...], [z10, z11, ...]], [[x20, x21, ...], [y20, y21, ...], [z20, z21, ...]]]
-
-    // Idea: Simply concatenate everything into a giant 2D array, where the rows represent all coordinates at a given time,
-    // while the columns represent the individual coordinates over time
-    let columns = pos_data[0].len() * 3;
-    let rows = pos_data.len();
+fn process_data_nbody(pos_data: Vec<Vec<Array1<f64>>>) -> Array2<f64> {
+    let rows = pos_data[0].len() * 3;
+    let columns = pos_data.len();
     let flattened = pos_data.into_iter().flatten().flatten().collect();
     Array2::from_shape_vec((columns, rows), flattened).unwrap()
 }
@@ -186,7 +184,7 @@ pub fn simulate_nbody_and_process_py<'py>(py: Python<'py>,
     let v_list: Vec<ArrayView1<f64>> = v_list.iter().map(|v| v.as_array()).collect();
     let (all_t, all_r, all_v, all_ke, all_pe, all_te) = 
         simulate_nbody(&r_list, &v_list, m_list.as_slice().unwrap(), dt, max_time, g);
-    let proc_r = process_pos_data_nbody(all_r).to_pyarray(py);
-    let proc_v = process_pos_data_nbody(all_v).to_pyarray(py);
+    let proc_r = process_data_nbody(all_r).to_pyarray(py);
+    let proc_v = process_data_nbody(all_v).to_pyarray(py);
     (all_t, proc_r, proc_v, all_ke, all_pe, all_te)
 }

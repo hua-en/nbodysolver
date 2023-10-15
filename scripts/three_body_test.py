@@ -37,11 +37,11 @@ sun_earth_moon_system_np = {
         np.array([0.0, 29800.0, 0.0]),      # Velocity of second body, Earth
         np.array([0.0, 30800.0, 0.0])       # Velocity of third body, Moon
     ], 
-    "m_list": [
+    "m_list": np.array([
         1.989e30,                     # Mass of first body, Sun
         5.972e24,                     # Mass of second body, Earth
         7.3476e22                     # Mass of third body, Moon
-    ]}
+    ])}
 
 def all_planet_acc_nbody(r_list, m_list, G=6.6743e-11):
     acc_list = []
@@ -114,5 +114,40 @@ time_4 = timeit("np_energy_solver()", number=iterations, globals=globals())
 print(f"Rust Energy Solver: {time_3 / iterations} seconds")
 print(f"Numpy Energy Solver: {time_4 / iterations} seconds")
 
-time_5 = timeit("nbodysolver.call_nbody()", number=10, globals=globals())
+time_5 = timeit("nbodysolver.call_nbody()", number=100, globals=globals())
 print(f"Calling nbody: {time_5 / iterations} seconds")
+
+def rust_nbody_solver(): 
+    nbodysolver.simulate_nbody_and_process_py(sun_earth_moon_system_np['r_list'], 
+                                                    sun_earth_moon_system_np['V_list'], 
+                                                    sun_earth_moon_system_np['m_list'], 
+                                                    1000., 31536000., 6.6743e-11)
+    
+time_6 = timeit("rust_nbody_solver()", number=100, globals=globals())
+print(f"Rust Simulation Results: {time_6 / 100} seconds")
+
+results = nbodysolver.simulate_nbody_and_process_py(sun_earth_moon_system_np['r_list'], 
+                                                    sun_earth_moon_system_np['V_list'], 
+                                                    sun_earth_moon_system_np['m_list'], 
+                                                    1000., 31536000., 6.6743e-11)
+
+# def plot_position(pos_data, fig_title):
+#     """
+#     Simple plotting function that plots the dataset on a 3D figure and axis.
+#     """
+    
+#     # Plot data
+#     fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+#     ax.plot3D(pos_data[:, 0], pos_data[:, 1], pos_data[:, 2], label="Object 1")
+#     ax.plot3D(pos_data[:, 3], pos_data[:, 4], pos_data[:, 5], label="Object 2")
+#     ax.plot3D(pos_data[:, 6], pos_data[:, 7], pos_data[:, 8], label="Object 3")
+#     ax.set_xlabel('x')
+#     ax.set_ylabel('y')
+#     ax.set_zlabel('z')
+#     ax.set_title(fig_title)
+#     ax.legend(loc="upper left")
+
+#     return fig, ax
+
+# fig, ax = plot_position(results[1], "Sun Earth Moon System")
+# plt.show()
