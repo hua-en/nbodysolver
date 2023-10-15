@@ -121,19 +121,6 @@ fn simulate_nbody<S: Data<Elem=f64>>(r_list_init: &[ArrayBase<S, Ix1>], v_list_i
     (all_t, all_r, all_v, all_ke, all_pe, all_te)
 }
 
-#[pyfunction]
-pub fn call_nbody<'py>(py: Python<'py>) -> (Vec<f64>, &'py PyArray2<f64>, &'py PyArray2<f64>, Vec<f64>, Vec<f64>, Vec<f64>) {
-    let r_list = [array![0., 0., 0.], array![149.597e9, 0., 0.], array![149.981e9, 0., 0.]];
-    let v_list = [array![0., 0., 0.], array![0., 29800., 0.], array![0., 30800., 0.]];
-    let m_list = [1.989e30, 5.972e24, 7.3476e22];
-    let g = 6.6743e-11;
-    let (all_t, all_r, all_v, all_ke, all_pe, all_te) = 
-        simulate_nbody(&r_list, &v_list, &m_list, 1000., 31536000., g);
-    let proc_r = process_data_nbody(all_r).to_pyarray(py);
-    let proc_v = process_data_nbody(all_v).to_pyarray(py);
-    (all_t, proc_r, proc_v, all_ke, all_pe, all_te)
-}
-
 fn explicit_euler() {
 
 }

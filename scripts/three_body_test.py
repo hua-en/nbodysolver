@@ -115,7 +115,7 @@ print(f"Rust Energy Solver: {time_3 / iterations} seconds")
 print(f"Numpy Energy Solver: {time_4 / iterations} seconds")
 
 time_5 = timeit("nbodysolver.call_nbody()", number=100, globals=globals())
-print(f"Calling nbody: {time_5 / iterations} seconds")
+print(f"Calling nbody: {time_5 / 100} seconds")
 
 def rust_nbody_solver(): 
     nbodysolver.simulate_nbody_and_process_py(sun_earth_moon_system_np['r_list'], 
@@ -131,23 +131,23 @@ results = nbodysolver.simulate_nbody_and_process_py(sun_earth_moon_system_np['r_
                                                     sun_earth_moon_system_np['m_list'], 
                                                     1000., 31536000., 6.6743e-11)
 
-# def plot_position(pos_data, fig_title):
-#     """
-#     Simple plotting function that plots the dataset on a 3D figure and axis.
-#     """
+def plot_position(pos_data, fig_title):
+    """
+    Simple plotting function that plots the dataset on a 3D figure and axis.
+    """
     
-#     # Plot data
-#     fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
-#     ax.plot3D(pos_data[:, 0], pos_data[:, 1], pos_data[:, 2], label="Object 1")
-#     ax.plot3D(pos_data[:, 3], pos_data[:, 4], pos_data[:, 5], label="Object 2")
-#     ax.plot3D(pos_data[:, 6], pos_data[:, 7], pos_data[:, 8], label="Object 3")
-#     ax.set_xlabel('x')
-#     ax.set_ylabel('y')
-#     ax.set_zlabel('z')
-#     ax.set_title(fig_title)
-#     ax.legend(loc="upper left")
+    # Plot data
+    fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+    ax.plot3D(pos_data[:, 0], pos_data[:, 1], pos_data[:, 2], label="Object 1")
+    ax.plot3D(pos_data[:, 3], pos_data[:, 4], pos_data[:, 5], label="Object 2")
+    ax.plot3D(pos_data[:, 6], pos_data[:, 7], pos_data[:, 8], label="Object 3")
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_zlabel('z')
+    ax.set_title(fig_title)
+    ax.legend(loc="upper left")
 
-#     return fig, ax
+    return fig, ax
 
-# fig, ax = plot_position(results[1], "Sun Earth Moon System")
-# plt.show()
+fig, ax = plot_position(results[1], "Sun Earth Moon System")
+plt.show()
