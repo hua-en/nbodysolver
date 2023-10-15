@@ -13,7 +13,7 @@ sun_earth_moon_system = {
         [0, 0, 0],          # Velocity of first body, Sun
         [0, 29800, 0],      # Velocity of second body, Earth
         [0, 30800, 0]       # Velocity of third body, Moon
-    ], 
+    ],
     "m_list": [
         1.989e30,                     # Mass of first body, Sun
         5.972e24,                     # Mass of second body, Earth
@@ -22,26 +22,27 @@ sun_earth_moon_system = {
 
 sun_earth_moon_system_np = {
     "r_list": [
-        # np.array([[0.0, 0, 0], 
-        #           [149.597e9, 0, 0], 
+        # np.array([[0.0, 0, 0],
+        #           [149.597e9, 0, 0],
         #           [149.981e9, 0, 0]])
         np.array([0.0, 0.0, 0.0]),          # Position of first body, Sun
         np.array([149.597e9, 0.0, 0.0]),  # Position of second body, Earth
         np.array([149.981e9, 0.0, 0.0])   # Position of third body, Moon
     ],
     "V_list": [
-        # np.array([[0.0, 0, 0], 
-        #           [0.0, 29800, 0], 
+        # np.array([[0.0, 0, 0],
+        #           [0.0, 29800, 0],
         #           [0.0, 30800, 0]])
         np.array([0.0, 0.0, 0.0]),          # Velocity of first body, Sun
         np.array([0.0, 29800.0, 0.0]),      # Velocity of second body, Earth
         np.array([0.0, 30800.0, 0.0])       # Velocity of third body, Moon
-    ], 
+    ],
     "m_list": np.array([
         1.989e30,                     # Mass of first body, Sun
         5.972e24,                     # Mass of second body, Earth
         7.3476e22                     # Mass of third body, Moon
     ])}
+
 
 def all_planet_acc_nbody(r_list, m_list, G=6.6743e-11):
     acc_list = []
@@ -58,6 +59,7 @@ def all_planet_acc_nbody(r_list, m_list, G=6.6743e-11):
         acc_list.append(i_acc)
 
     return acc_list
+
 
 def total_energy_nbody(r_list, V_list, m_list, G=6.6743e-11):
     """
@@ -87,13 +89,22 @@ def total_energy_nbody(r_list, V_list, m_list, G=6.6743e-11):
     total_energy = kinetic_energy + potential_energy
     return kinetic_energy, potential_energy, total_energy
 
+
 iterations = 1000
 
-def rust_acc_solver(): nbodysolver.all_planet_acc_nbody_py(sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["m_list"], 6.6743e-11)
-def np_acc_solver(): all_planet_acc_nbody(sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["m_list"], 6.6743e-11)
 
-print("Rust Acceleration Results:", nbodysolver.all_planet_acc_nbody_py(sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["m_list"], 6.6743e-11))
-print("Python Acceleration Results:", all_planet_acc_nbody(sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["m_list"], 6.6743e-11))
+def rust_acc_solver(): nbodysolver.all_planet_acc_nbody_py(
+    sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["m_list"], 6.6743e-11)
+
+
+def np_acc_solver(): all_planet_acc_nbody(
+    sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["m_list"], 6.6743e-11)
+
+
+print("Rust Acceleration Results:", nbodysolver.all_planet_acc_nbody_py(
+    sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["m_list"], 6.6743e-11))
+print("Python Acceleration Results:", all_planet_acc_nbody(
+    sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["m_list"], 6.6743e-11))
 
 time_1 = timeit("rust_acc_solver()", number=iterations, globals=globals())
 time_2 = timeit("np_acc_solver", number=iterations, globals=globals())
@@ -102,11 +113,22 @@ print(f"Rust Acceleration Solver 1: {time_1 / iterations} seconds")
 print(f"Numpy Acceleration Solver: {time_2 / iterations} seconds")
 
 
-def rust_energy_solver(): nbodysolver.total_energy_nbody_py(sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["V_list"], sun_earth_moon_system_np["m_list"], 6.6743e-11)
-def np_energy_solver(): total_energy_nbody(sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["V_list"], sun_earth_moon_system_np["m_list"])
+def rust_energy_solver(): nbodysolver.total_energy_nbody_py(
+    sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["V_list"], 
+    sun_earth_moon_system_np["m_list"], 6.6743e-11)
 
-print("Rust Energy Results:", nbodysolver.total_energy_nbody_py(sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["V_list"], sun_earth_moon_system_np["m_list"], 6.6743e-11))
-print("Python Energy Results:", total_energy_nbody(sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["V_list"], sun_earth_moon_system_np["m_list"]))
+
+def np_energy_solver(): total_energy_nbody(
+    sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["V_list"], 
+    sun_earth_moon_system_np["m_list"])
+
+
+print("Rust Energy Results:", nbodysolver.total_energy_nbody_py(
+    sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["V_list"], 
+    sun_earth_moon_system_np["m_list"], 6.6743e-11))
+print("Python Energy Results:", total_energy_nbody(
+    sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["V_list"], 
+    sun_earth_moon_system_np["m_list"]))
 
 time_3 = timeit("rust_energy_solver()", number=iterations, globals=globals())
 time_4 = timeit("np_energy_solver()", number=iterations, globals=globals())
@@ -117,25 +139,28 @@ print(f"Numpy Energy Solver: {time_4 / iterations} seconds")
 time_5 = timeit("nbodysolver.call_nbody()", number=100, globals=globals())
 print(f"Calling nbody: {time_5 / 100} seconds")
 
-def rust_nbody_solver(): 
-    nbodysolver.simulate_nbody_and_process_py(sun_earth_moon_system_np['r_list'], 
-                                                    sun_earth_moon_system_np['V_list'], 
-                                                    sun_earth_moon_system_np['m_list'], 
-                                                    1000., 31536000., 6.6743e-11)
-    
+
+def rust_nbody_solver():
+    nbodysolver.simulate_nbody_and_process_py(sun_earth_moon_system_np['r_list'],
+                                              sun_earth_moon_system_np['V_list'],
+                                              sun_earth_moon_system_np['m_list'],
+                                              1000., 31536000., 6.6743e-11)
+
+
 time_6 = timeit("rust_nbody_solver()", number=100, globals=globals())
 print(f"Rust Simulation Results: {time_6 / 100} seconds")
 
-results = nbodysolver.simulate_nbody_and_process_py(sun_earth_moon_system_np['r_list'], 
-                                                    sun_earth_moon_system_np['V_list'], 
-                                                    sun_earth_moon_system_np['m_list'], 
+results = nbodysolver.simulate_nbody_and_process_py(sun_earth_moon_system_np['r_list'],
+                                                    sun_earth_moon_system_np['V_list'],
+                                                    sun_earth_moon_system_np['m_list'],
                                                     1000., 31536000., 6.6743e-11)
+
 
 def plot_position(pos_data, fig_title):
     """
     Simple plotting function that plots the dataset on a 3D figure and axis.
     """
-    
+
     # Plot data
     fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
     ax.plot3D(pos_data[:, 0], pos_data[:, 1], pos_data[:, 2], label="Object 1")
@@ -148,6 +173,7 @@ def plot_position(pos_data, fig_title):
     ax.legend(loc="upper left")
 
     return fig, ax
+
 
 fig, ax = plot_position(results[1], "Sun Earth Moon System")
 plt.show()
