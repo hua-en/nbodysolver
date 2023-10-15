@@ -130,11 +130,10 @@ print("Python Acceleration Results:", all_planet_acc_nbody(
     sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["m_list"], 6.6743e-11))
 
 time_1 = timeit("rust_acc_solver()", number=iterations, globals=globals())
-time_2 = timeit("np_acc_solver", number=iterations, globals=globals())
+time_2 = timeit("np_acc_solver()", number=iterations, globals=globals())
 
-print(f"Rust Acceleration Solver 1: {time_1 / iterations} seconds")
+print(f"Rust Acceleration Solver: {time_1 / iterations} seconds")
 print(f"Numpy Acceleration Solver: {time_2 / iterations} seconds")
-
 
 def rust_energy_solver(): nbodysolver.total_energy_nbody_py(
     sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["V_list"], 
