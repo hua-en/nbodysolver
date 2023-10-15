@@ -1,14 +1,16 @@
+mod lorenz;
+mod three_body;
+
 use pyo3::prelude::*;
 
-/// Formats the sum of two numbers as string.
-#[pyfunction]
-fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
-    Ok((a + b).to_string())
-}
+use crate::lorenz::solve_lorenz;
+use crate::three_body::{list_sum, all_planet_acc_nbody_py};
 
 /// A Python module implemented in Rust.
 #[pymodule]
 fn nbodysolver(_py: Python, m: &PyModule) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(sum_as_string, m)?)?;
+    m.add_function(wrap_pyfunction!(solve_lorenz, m)?)?;
+    m.add_function(wrap_pyfunction!(list_sum, m)?)?;
+    m.add_function(wrap_pyfunction!(all_planet_acc_nbody_py, m)?)?;
     Ok(())
 }
