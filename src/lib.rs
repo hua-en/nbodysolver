@@ -1,10 +1,10 @@
 mod lorenz;
-mod three_body;
+mod n_body;
 
 use pyo3::prelude::*;
 
 use crate::lorenz::solve_lorenz;
-use crate::three_body::{
+use crate::n_body::{
     all_planet_acc_nbody_py, simulate_nbody_and_process_py, total_energy_nbody_py,
 };
 
