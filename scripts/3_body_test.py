@@ -89,23 +89,23 @@ def total_energy_nbody(r_list, V_list, m_list, G=6.6743e-11):
 
 iterations = 1000
 
-def rust_acc_solver(): nbodysolver.all_planet_acc_nbody_py(sun_earth_moon_system["r_list"], sun_earth_moon_system["m_list"], 6.6743e-11)
+def rust_acc_solver(): nbodysolver.all_planet_acc_nbody_py(sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["m_list"], 6.6743e-11)
 def np_acc_solver(): all_planet_acc_nbody(sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["m_list"], 6.6743e-11)
 
-print("Rust Acceleration Results:", nbodysolver.all_planet_acc_nbody_py(sun_earth_moon_system["r_list"], sun_earth_moon_system["m_list"], 6.6743e-11))
+print("Rust Acceleration Results:", nbodysolver.all_planet_acc_nbody_py(sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["m_list"], 6.6743e-11))
 print("Python Acceleration Results:", all_planet_acc_nbody(sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["m_list"], 6.6743e-11))
 
 time_1 = timeit("rust_acc_solver()", number=iterations, globals=globals())
 time_2 = timeit("np_acc_solver", number=iterations, globals=globals())
 
-print(f"Rust Acceleration Solver: {time_1 / iterations} seconds")
+print(f"Rust Acceleration Solver 1: {time_1 / iterations} seconds")
 print(f"Numpy Acceleration Solver: {time_2 / iterations} seconds")
 
 
-def rust_energy_solver(): nbodysolver.total_energy_nbody_py(sun_earth_moon_system["r_list"], sun_earth_moon_system["V_list"], sun_earth_moon_system["m_list"], 6.6743e-11)
+def rust_energy_solver(): nbodysolver.total_energy_nbody_py(sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["V_list"], sun_earth_moon_system_np["m_list"], 6.6743e-11)
 def np_energy_solver(): total_energy_nbody(sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["V_list"], sun_earth_moon_system_np["m_list"])
 
-print("Rust Energy Results:", nbodysolver.total_energy_nbody_py(sun_earth_moon_system["r_list"], sun_earth_moon_system["V_list"], sun_earth_moon_system["m_list"], 6.6743e-11))
+print("Rust Energy Results:", nbodysolver.total_energy_nbody_py(sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["V_list"], sun_earth_moon_system_np["m_list"], 6.6743e-11))
 print("Python Energy Results:", total_energy_nbody(sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["V_list"], sun_earth_moon_system_np["m_list"]))
 
 time_3 = timeit("rust_energy_solver()", number=iterations, globals=globals())
@@ -113,3 +113,6 @@ time_4 = timeit("np_energy_solver()", number=iterations, globals=globals())
 
 print(f"Rust Energy Solver: {time_3 / iterations} seconds")
 print(f"Numpy Energy Solver: {time_4 / iterations} seconds")
+
+time_5 = timeit("nbodysolver.call_nbody()", number=10, globals=globals())
+print(f"Calling nbody: {time_5 / iterations} seconds")

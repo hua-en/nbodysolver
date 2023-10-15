@@ -163,6 +163,7 @@ dependencies = [
  "itertools",
  "ndarray",
  "ndarray-linalg",
+ "num-traits",
  "numpy",
  "pyo3",
 ]

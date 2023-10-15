@@ -12,5 +12,6 @@ crate-type = ["cdylib"]
 itertools = "0.11.0"
 ndarray = "0.15.6"
 ndarray-linalg = "0.16.0"
+num-traits = "0.2.17"
 numpy = "0.20.0"
 pyo3 = "0.20.0"
