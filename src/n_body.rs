@@ -2,7 +2,7 @@ use itertools::izip;
 use ndarray::prelude::*;
 use ndarray::{Array, Data};
 use ndarray_linalg::norm;
-use numpy::{PyArray2, PyArrayLike1, ToPyArray, TypeMustMatch};
+use numpy::{PyArray2, PyArrayLike1, ToPyArray, TypeMustMatch, IntoPyArray};
 use pyo3::prelude::*;
 use std::iter::zip;
 use std::mem;
@@ -199,10 +199,10 @@ fn leapfrog<S: Data<Elem = f64>>(
 }
 
 fn process_data_nbody(pos_data: Vec<Vec<Array1<f64>>>) -> Array2<f64> {
-    let rows = pos_data[0].len() * 3;
-    let columns = pos_data.len();
+    let rows = pos_data.len();
+    let columns = pos_data[0].len() * 3;
     let flattened = pos_data.into_iter().flatten().flatten().collect();
-    Array2::from_shape_vec((columns, rows), flattened).unwrap()
+    Array2::from_shape_vec((rows, columns), flattened).unwrap()
 }
 
 #[pyfunction]
@@ -232,7 +232,7 @@ pub fn simulate_nbody_and_process_py<'py>(
         max_time,
         g,
     );
-    let proc_r = process_data_nbody(all_r).to_pyarray(py);
-    let proc_v = process_data_nbody(all_v).to_pyarray(py);
+    let proc_r = process_data_nbody(all_r).into_pyarray(py);
+    let proc_v = process_data_nbody(all_v).into_pyarray(py);
     (all_t, proc_r, proc_v, all_ke, all_pe, all_te)
 }
