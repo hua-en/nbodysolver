@@ -1,8 +1,8 @@
 use itertools::izip;
-use ndarray::prelude::*;
+use ndarray::{prelude::*, stack};
 use ndarray::{Array, Data};
 use ndarray_linalg::norm;
-use numpy::{PyArray2, PyArrayLike1, ToPyArray, TypeMustMatch, IntoPyArray};
+use numpy::{IntoPyArray, PyArray2, PyArrayLike1, ToPyArray, TypeMustMatch};
 use pyo3::prelude::*;
 use std::iter::zip;
 use std::mem;
@@ -25,21 +25,6 @@ fn all_planet_acc_nbody<S: Data<Elem = f64>>(
         }
         acc_list.push(i_acc)
     }
-    acc_list
-}
-
-#[pyfunction]
-pub fn all_planet_acc_nbody_py<'py>(
-    py: Python<'py>,
-    r_list: Vec<PyArrayLike1<'py, f64, TypeMustMatch>>,
-    m_list: PyArrayLike1<'py, f64, TypeMustMatch>,
-    g: f64,
-) -> Vec<Vec<f64>> {
-    let r_list: Vec<ArrayView1<f64>> = r_list.iter().map(|v| v.as_array()).collect();
-    let acc_list: Vec<Vec<f64>> = all_planet_acc_nbody(&r_list, m_list.as_slice().unwrap(), g)
-        .iter()
-        .map(|a| a.to_vec())
-        .collect();
     acc_list
 }
 
@@ -72,21 +57,6 @@ fn total_energy_nbody<S: Data<Elem = f64>>(
         potential_energy,
         kinetic_energy + potential_energy,
     )
-}
-
-#[pyfunction]
-pub fn total_energy_nbody_py<'py>(
-    py: Python<'py>,
-    r_list: Vec<PyArrayLike1<'py, f64, TypeMustMatch>>,
-    v_list: Vec<PyArrayLike1<'py, f64, TypeMustMatch>>,
-    m_list: PyArrayLike1<'py, f64, TypeMustMatch>,
-    g: f64,
-) -> (f64, f64, f64) {
-    let r_list: Vec<ArrayView1<f64>> = r_list.iter().map(|v| v.as_array()).collect();
-    let v_list: Vec<ArrayView1<f64>> = v_list.iter().map(|v| v.as_array()).collect();
-    let total_energy: (f64, f64, f64) =
-        total_energy_nbody(&r_list, &v_list, m_list.as_slice().unwrap(), g);
-    total_energy
 }
 
 type NBodyResults = (
@@ -122,16 +92,10 @@ fn simulate_nbody<S: Data<Elem = f64>>(
     let mut all_ke = Vec::with_capacity(timespan);
 
     // Calculate initial total energy
-    // let r_list_view: Vec<ArrayView1<f64>> = r_list.iter().map(|v| v.view()).collect();
-    // let v_list_view: Vec<ArrayView1<f64>> = V_list.iter().map(|v| v.view()).collect();
     let (_, _, init_te) = total_energy_nbody(&r_list, &v_list, m_list, g);
     let abs_init_te = init_te.abs();
 
     for time in all_time {
-        // Create arrayviews for current r_list and V_list
-        // let r_list_view: Vec<ArrayView1<f64>> = r_list.iter().map(|v| v.view()).collect();
-        // let v_list_view: Vec<ArrayView1<f64>> = V_list.iter().map(|v| v.view()).collect();
-
         // Calculate current energy values
         let (ke, pe, te) = total_energy_nbody(&r_list, &v_list, m_list, g);
 
@@ -185,8 +149,8 @@ fn leapfrog<S: Data<Elem = f64>>(
         new_r_list.push(new_r)
     }
 
-    let new_r_list_view: Vec<ArrayView1<f64>> = new_r_list.iter().map(|v| v.view()).collect();
-    let new_a_list = all_planet_acc_nbody(&new_r_list_view, m_list, g);
+    // Find the new acceleration of the objects
+    let new_a_list = all_planet_acc_nbody(&new_r_list, m_list, g);
 
     // Find the new velocity of the objects
     let mut new_v_list = Vec::with_capacity(planet_cnt);
@@ -203,6 +167,36 @@ fn process_data_nbody(pos_data: Vec<Vec<Array1<f64>>>) -> Array2<f64> {
     let columns = pos_data[0].len() * 3;
     let flattened = pos_data.into_iter().flatten().flatten().collect();
     Array2::from_shape_vec((rows, columns), flattened).unwrap()
+}
+
+#[pyfunction]
+pub fn all_planet_acc_nbody_py<'py>(
+    py: Python<'py>,
+    r_list: Vec<PyArrayLike1<'py, f64, TypeMustMatch>>,
+    m_list: PyArrayLike1<'py, f64, TypeMustMatch>,
+    g: f64,
+) -> Vec<Vec<f64>> {
+    let r_list: Vec<ArrayView1<f64>> = r_list.iter().map(|v| v.as_array()).collect();
+    let acc_list: Vec<Vec<f64>> = all_planet_acc_nbody(&r_list, m_list.as_slice().unwrap(), g)
+        .iter()
+        .map(|a| a.to_vec())
+        .collect();
+    acc_list
+}
+
+#[pyfunction]
+pub fn total_energy_nbody_py<'py>(
+    py: Python<'py>,
+    r_list: Vec<PyArrayLike1<'py, f64, TypeMustMatch>>,
+    v_list: Vec<PyArrayLike1<'py, f64, TypeMustMatch>>,
+    m_list: PyArrayLike1<'py, f64, TypeMustMatch>,
+    g: f64,
+) -> (f64, f64, f64) {
+    let r_list: Vec<ArrayView1<f64>> = r_list.iter().map(|v| v.as_array()).collect();
+    let v_list: Vec<ArrayView1<f64>> = v_list.iter().map(|v| v.as_array()).collect();
+    let total_energy: (f64, f64, f64) =
+        total_energy_nbody(&r_list, &v_list, m_list.as_slice().unwrap(), g);
+    total_energy
 }
 
 #[pyfunction]
