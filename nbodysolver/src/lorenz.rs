@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use num::{Float, traits::NumAssign, FromPrimitive};
 
 fn dxdt<T: Float>(x:T, y:T, tau:T) -> T {
@@ -13,7 +12,7 @@ fn dzdt<T: Float>(x: T, y:T, z:T, beta:T) -> T {
     x * y - beta * z
 }
 
-pub fn solve_lorenz<T: Float + NumAssign + FromPrimitive>(coords: (T, T, T), max_time: T, dt: T, tau:T, rho: T, beta: T) -> HashMap<String, Vec<T>> {
+pub fn solve_lorenz<T: Float + NumAssign + FromPrimitive>(coords: (T, T, T), max_time: T, dt: T, tau:T, rho: T, beta: T) -> (Vec<T>, Vec<T>, Vec<T>, Vec<T>) {
     let mut x = coords.0;
     let mut y = coords.1;
     let mut z = coords.2;
@@ -39,12 +38,5 @@ pub fn solve_lorenz<T: Float + NumAssign + FromPrimitive>(coords: (T, T, T), max
         t += dt;
     }
     
-    // Create return map
-    let mut ret_map = HashMap::new();
-    ret_map.insert("x".to_string(), x_lst);
-    ret_map.insert("y".to_string(), y_lst);
-    ret_map.insert("z".to_string(), z_lst);
-    ret_map.insert("t".to_string(), t_lst);
-
-    ret_map
+    (x_lst, y_lst, z_lst, t_lst)
 }

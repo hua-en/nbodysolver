@@ -1,5 +1,5 @@
 use ndarray::{prelude::*, stack};
-use numpy::{IntoPyArray, PyArray2, PyArrayLike1, ToPyArray, TypeMustMatch, PyArrayLike2, PyArray3};
+use numpy::{IntoPyArray, PyArray2, PyArrayLike1, ToPyArray, TypeMustMatch, PyArrayLike2, PyArray3, PyArray1};
 use pyo3::prelude::*;
 use nbodysolver::n_body;
 
@@ -41,12 +41,12 @@ pub fn simulate_nbody_and_process_py<'py>(
     max_time: f64,
     g: f64,
 ) -> (
-    Vec<f64>,
+    &'py PyArray1<f64>,
     &'py PyArray3<f64>,
     &'py PyArray3<f64>,
-    Vec<f64>,
-    Vec<f64>,
-    Vec<f64>,
+    &'py PyArray1<f64>,
+    &'py PyArray1<f64>,
+    &'py PyArray1<f64>,
 ) {
     let (all_t, all_r, all_v, all_ke, all_pe, all_te) = n_body::simulate_nbody(
         r_list.as_array(),
@@ -58,5 +58,5 @@ pub fn simulate_nbody_and_process_py<'py>(
     );
     let proc_r = n_body::process_data_nbody(all_r).into_pyarray(py);
     let proc_v = n_body::process_data_nbody(all_v).into_pyarray(py);
-    (all_t, proc_r, proc_v, all_ke, all_pe, all_te)
+    (all_t.into_pyarray(py), proc_r, proc_v, all_ke.into_pyarray(py), all_pe.into_pyarray(py), all_te.into_pyarray(py))
 }

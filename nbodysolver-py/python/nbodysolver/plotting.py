@@ -25,7 +25,7 @@ def plot_position_nbody(pos_data: npt.NDArray[np.float64], fig_title: str):
 
     return fig, ax
 
-def animate_data_nbody(timesteps: list[float], 
+def animate_data_nbody(timesteps: npt.NDArray[np.float64], 
                        pos_data: npt.NDArray[np.float64], 
                        animation_frames: int, 
                        fig_title: str, 

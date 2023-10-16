@@ -6,7 +6,7 @@ from timeit import timeit
 result = nbodysolver.solve_lorenz((0, 1, 0), 50, 0.001)
 
 ax = plt.axes(projection='3d')
-ax.plot3D(result['x'], result['y'], result['z'])
+ax.plot3D(result[0], result[1], result[2])
 plt.show()
 
 iterations = 1000

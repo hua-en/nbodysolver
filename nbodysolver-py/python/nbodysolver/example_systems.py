@@ -15,8 +15,8 @@ class NBodySystem:
 
 def simulate_system(system: NBodySystem, dt: float, 
                     max_time: float, g: float = 6.6743e-11) -> \
-    tuple[list[float], npt.NDArray[np.float64], npt.NDArray[np.float64], 
-          list[float], list[float], list[float]]:
+    tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64], 
+          npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]]:
     return simulate_nbody_and_process(system.r_list, 
                                       system.v_list, 
                                       system.m_list, dt, max_time, g)
