@@ -4,48 +4,47 @@ use ndarray::{Array, Data};
 use ndarray_linalg::norm;
 use std::iter::zip;
 use std::mem;
+use std::ops::AddAssign;
 
 pub fn all_planet_acc_nbody<S: Data<Elem = f64>>(
-    r_list: &[ArrayBase<S, Ix1>],
-    m_list: &[f64],
+    r_list: ArrayBase<S, Ix2>,
+    m_list: ArrayBase<S, Ix1>,
     g: f64,
-) -> Vec<Array1<f64>> {
-    let planet_cnt = r_list.len();
-    let mut acc_list = Vec::with_capacity(planet_cnt);
+) -> Array2<f64> {
+    let planet_cnt = r_list.nrows();
+    let mut acc_list = Array::zeros(r_list.raw_dim());
 
     for i in 0..planet_cnt {
-        let mut i_acc = array![0.0, 0.0, 0.0];
         for j in 0..planet_cnt {
             if i != j {
-                let rij = &r_list[i] - &r_list[j];
-                i_acc += &((-g * m_list[j] * (&rij)) / (norm::Norm::norm_l2(&rij).powi(3)))
+                let rij = &r_list.row(i) - &r_list.row(j);
+                acc_list.row_mut(i).add_assign(&((-g * m_list[j] * (&rij)) / (norm::Norm::norm_l2(&rij).powi(3))))
             }
         }
-        acc_list.push(i_acc)
     }
     acc_list
 }
 
 pub fn total_energy_nbody<S: Data<Elem = f64>>(
-    r_list: &[ArrayBase<S, Ix1>],
-    v_list: &[ArrayBase<S, Ix1>],
-    m_list: &[f64],
+    r_list: ArrayBase<S, Ix2>,
+    v_list: ArrayBase<S, Ix2>,
+    m_list: ArrayBase<S, Ix1>,
     g: f64,
 ) -> (f64, f64, f64) {
     let mut kinetic_energy = 0.0;
     let mut potential_energy = 0.0;
 
     // Total Kinetic Energy
-    for (v, m) in zip(v_list, m_list) {
-        kinetic_energy += 0.5 * *m * (norm::Norm::norm_l2(v).powi(2));
+    for (v, m) in zip(v_list.outer_iter(), m_list.iter()) {
+        kinetic_energy += 0.5 * *m * (norm::Norm::norm_l2(&v).powi(2));
     }
 
     // Total Potential Energy
-    let planet_cnt = r_list.len();
+    let planet_cnt = r_list.nrows();
     for i in 0..(planet_cnt - 1) {
         for j in (i + 1)..planet_cnt {
             potential_energy +=
-                (-g * m_list[i] * m_list[j]) / norm::Norm::norm_l2(&(&r_list[i] - &r_list[j]));
+                (-g * m_list[i] * m_list[j]) / norm::Norm::norm_l2(&(&r_list.row(i) - &r_list.row(j)));
         }
     }
 
@@ -59,24 +58,24 @@ pub fn total_energy_nbody<S: Data<Elem = f64>>(
 
 type NBodyResults = (
     Vec<f64>,
-    Vec<Vec<Array1<f64>>>,
-    Vec<Vec<Array1<f64>>>,
+    Vec<Array2<f64>>,
+    Vec<Array2<f64>>,
     Vec<f64>,
     Vec<f64>,
     Vec<f64>,
 );
 
 pub fn simulate_nbody<S: Data<Elem = f64>>(
-    r_list_init: &[ArrayBase<S, Ix1>],
-    v_list_init: &[ArrayBase<S, Ix1>],
-    m_list: &[f64],
+    r_list_init: ArrayBase<S, Ix2>,
+    v_list_init: ArrayBase<S, Ix2>,
+    m_list: ArrayBase<S, Ix1>,
     dt: f64,
     max_time: f64,
     g: f64,
 ) -> NBodyResults {
     // Create a copy of r_list and V_list
-    let mut r_list: Vec<Array1<f64>> = r_list_init.iter().map(|v| v.to_owned()).collect();
-    let mut v_list: Vec<Array1<f64>> = v_list_init.iter().map(|v| v.to_owned()).collect();
+    let mut r_list: Array2<f64> = r_list_init.to_owned();
+    let mut v_list: Array2<f64> = v_list_init.to_owned();
 
     // Initialise all datasets
     let all_time = Array::range(0., max_time, dt);
@@ -90,12 +89,12 @@ pub fn simulate_nbody<S: Data<Elem = f64>>(
     let mut all_ke = Vec::with_capacity(timespan);
 
     // Calculate initial total energy
-    let (_, _, init_te) = total_energy_nbody(&r_list, &v_list, m_list, g);
+    let (_, _, init_te) = total_energy_nbody(r_list.view(), v_list.view(), m_list.view(), g);
     let abs_init_te = init_te.abs();
 
     for time in all_time {
         // Calculate current energy values
-        let (ke, pe, te) = total_energy_nbody(&r_list, &v_list, m_list, g);
+        let (ke, pe, te) = total_energy_nbody(r_list.view(), v_list.view(), m_list.view(), g);
 
         // Check if TE has changed too much from the initial total energy
         // If it has, stop the simulation early
@@ -105,7 +104,7 @@ pub fn simulate_nbody<S: Data<Elem = f64>>(
         }
 
         // Calculate new position and velocity
-        let (new_r_list, new_v_list) = leapfrog(&r_list, &v_list, m_list, dt, g);
+        let (new_r_list, new_v_list) = leapfrog(r_list.view(), v_list.view(), m_list.view(), dt, g);
 
         // Set position and velocity to next timestep
         let old_r_list = mem::replace(&mut r_list, new_r_list);
@@ -130,39 +129,28 @@ pub fn explicit_euler() {}
 pub fn semi_implicit_euler() {}
 
 pub fn leapfrog<S: Data<Elem = f64>>(
-    r_list: &[ArrayBase<S, Ix1>],
-    v_list: &[ArrayBase<S, Ix1>],
-    m_list: &[f64],
+    r_list: ArrayBase<S, Ix2>,
+    v_list: ArrayBase<S, Ix2>,
+    m_list: ArrayBase<S, Ix1>,
     dt: f64,
     g: f64,
-) -> (Vec<Array1<f64>>, Vec<Array1<f64>>) {
-    let planet_cnt = r_list.len();
+) -> (Array2<f64>, Array2<f64>) {
     // Find the acceleration of the objects
-    let a_list = all_planet_acc_nbody(r_list, m_list, g);
+    let a_list = all_planet_acc_nbody(r_list.view(), m_list.view(), g);
 
     // Find the new positions of the objects
-    let mut new_r_list = Vec::with_capacity(planet_cnt);
-    for (r, v, a) in izip!(r_list, v_list, &a_list) {
-        let new_r = r + v * dt + 0.5 * a * (dt.powi(2));
-        new_r_list.push(new_r)
-    }
+    let new_r_list = &r_list + &v_list * dt + 0.5 * &a_list * (dt.powi(2));
 
     // Find the new acceleration of the objects
-    let new_a_list = all_planet_acc_nbody(&new_r_list, m_list, g);
+    let new_a_list = all_planet_acc_nbody(new_r_list.view(), m_list.view(), g);
 
     // Find the new velocity of the objects
-    let mut new_v_list = Vec::with_capacity(planet_cnt);
-    for (v, a, new_a) in izip!(v_list, &a_list, &new_a_list) {
-        let new_v = v + 0.5 * (a + new_a) * dt;
-        new_v_list.push(new_v);
-    }
+    let new_v_list = &v_list + 0.5 * (&a_list + &new_a_list) * dt;
 
     (new_r_list, new_v_list)
 }
 
-pub fn process_data_nbody(pos_data: Vec<Vec<Array1<f64>>>) -> Array2<f64> {
-    let rows = pos_data.len();
-    let columns = pos_data[0].len() * 3;
-    let flattened = pos_data.into_iter().flatten().flatten().collect();
-    Array2::from_shape_vec((rows, columns), flattened).unwrap()
+pub fn process_data_nbody(pos_data: Vec<Array2<f64>>) -> Array3<f64> {
+    let pos_data_view: Vec<ArrayView2<f64>> = pos_data.iter().map(|v| v.view()).collect();
+    stack(Axis(0), &pos_data_view).unwrap()
 }

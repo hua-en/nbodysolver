@@ -8,9 +8,9 @@ def plot_position_nbody(pos_data, fig_title):
     """
     # Plot data
     fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
-    for i in range(0, pos_data.shape[1], 3):
-        ax.plot3D(pos_data[:, i], pos_data[:, i+1], pos_data[:, i+2], 
-                  label=f"Object {(i+1)//3}")
+    for i in range(0, pos_data.shape[1]):
+        ax.plot3D(pos_data[:, i, 0], pos_data[:, i, 1], pos_data[:, i, 2], 
+                  label=f"Object {i+1}")
     ax.set_xlabel('x')
     ax.set_ylabel('y')
     ax.set_zlabel('z')
@@ -44,12 +44,12 @@ def animate_data_nbody(timesteps, pos_data, animation_frames, fig_title, line_po
     no_of_timesteps = len(timesteps)
 
     # Find number of objects in dataset
-    obj_cnt = len(pos_data[0]) // 3
+    obj_cnt = pos_data.shape[1]
 
     # Find x, y and z limits in the data by finding the minimum and maximum x, y and z
-    min_x, max_x = np.min(pos_data[:, ::3]), np.max(pos_data[:, ::3])
-    min_y, max_y = np.min(pos_data[:, 1::3]), np.max(pos_data[:, 1::3])
-    min_z, max_z = np.min(pos_data[:, 2::3]), np.max(pos_data[:, 2::3])
+    min_x, max_x = np.min(pos_data[:, :, 0]), np.max(pos_data[:, :, 0])
+    min_y, max_y = np.min(pos_data[:, :, 1]), np.max(pos_data[:, :, 1])
+    min_z, max_z = np.min(pos_data[:, :, 2]), np.max(pos_data[:, :, 2])
 
     # --- Create Figure ----------------------------------------------#
     # Create Lines and Points within the animation
@@ -95,11 +95,10 @@ def animate_data_nbody(timesteps, pos_data, animation_frames, fig_title, line_po
         j = i * (no_of_timesteps // animation_frames)
 
         for cur_obj, (line3d, point3d) in enumerate(zip(line3d_lst, point3d_lst)):
-            cur_ind = cur_obj * 3
-            line3d.set_data(pos_data[:j, cur_ind], pos_data[:j, cur_ind+1])
-            line3d.set_3d_properties(pos_data[:j, cur_ind+2])
-            point3d.set_data(pos_data[j-1:j, cur_ind], pos_data[j-1:j, cur_ind+1])
-            point3d.set_3d_properties(pos_data[j-1:j, cur_ind+2])
+            line3d.set_data(pos_data[:j, cur_obj, 0], pos_data[:j, cur_obj, 1])
+            line3d.set_3d_properties(pos_data[:j, cur_obj, 2])
+            point3d.set_data(pos_data[j-1:j, cur_obj, 0], pos_data[j-1:j, cur_obj, 1])
+            point3d.set_3d_properties(pos_data[j-1:j, cur_obj, 2])
 
         # figanim.canvas.draw()
         return tuple([*line3d_lst, *point3d_lst])
