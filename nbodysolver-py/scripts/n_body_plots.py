@@ -28,9 +28,24 @@ nbody_customoptions = {"line1":  {"label": "Sun", "color": "Orange"},           
                        "point4": {"ls": "", "color": "Grey", "marker": "o", "markersize": 2},       # Options for Point 4 (L4 Point)
                        "point5": {"ls": "", "color": "Grey", "marker": "o", "markersize": 2}}       # Options for Point 5 (L5 Point)
 
+nbody_customoptionsobj = nbodysolver.AnimationOptions(line_options=[
+    {"label": "Sun", "color": "Orange"},                             # Options for Line 1 (Sun)
+    {"label": "Earth", "color": "Darkblue", "lw": 2},                # Options for Line 2 (Earth)
+    {"label": "Moon", "color": "Grey", "lw": 0.75},                  # Options for Line 3 (Moon)
+    {"label": "L4 Point", "color": "Grey", "lw": 0.75},              # Options for Line 4 (L4 Point)
+    {"label": "L5 Point", "color": "Grey", "lw": 0.75},              # Options for Line 5 (L5 Point)
+],
+point_options=[
+    {"ls": "", "color": "Orange", "marker": "o"},                    # Options for Point 1 (Sun)
+    {"ls": "", "color": "Darkblue", "marker": "o", "markersize": 5}, # Options for Point 2 (Earth)
+    {"ls": "", "color": "Grey", "marker": "o", "markersize": 2},     # Options for Point 3 (Moon)
+    {"ls": "", "color": "Grey", "marker": "o", "markersize": 2},     # Options for Point 4 (L4 Point)
+    {"ls": "", "color": "Grey", "marker": "o", "markersize": 2}      # Options for Point 5 (L5 Point)
+])
+
 
 # Create the animation
-nbody_animation = nbodysolver.animate_data_nbody(results2[0], results2[1], 200, "N-Body System", nbody_customoptions)
+nbody_animation = nbodysolver.animate_data_nbody(results2[0], results2[1], 200, "N-Body System", nbody_customoptionsobj)
 
 # Save the animation in a video file
 nbody_animation.save("N-Body System.mp4")

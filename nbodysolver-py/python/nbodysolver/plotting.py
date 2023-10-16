@@ -1,8 +1,14 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import numpy.typing as npt
 import matplotlib.animation as animation
 
-def plot_position_nbody(pos_data, fig_title):
+class AnimationOptions:
+    def __init__(self, line_options, point_options):
+        self.line_options = line_options
+        self.point_options = point_options
+
+def plot_position_nbody(pos_data: npt.NDArray[np.float64], fig_title: str):
     """
     Simple plotting function that plots the dataset on a 3D figure and axis.
     """
@@ -19,7 +25,12 @@ def plot_position_nbody(pos_data, fig_title):
 
     return fig, ax
 
-def animate_data_nbody(timesteps, pos_data, animation_frames, fig_title, line_point_options, animation_interval=25):
+def animate_data_nbody(timesteps: list[float], 
+                       pos_data: npt.NDArray[np.float64], 
+                       animation_frames: int, 
+                       fig_title: str, 
+                       line_point_options: AnimationOptions, 
+                       animation_interval: int=25):
     """Animates a dataset using matplotlib.animate, given a dataset and the number of frames to animate.
     Returns the matplotlib animation object, which can be rendered into a video with anim.save() 
     and/or embedded as a HTML video with HTML(anim.to_html5_video()).
@@ -58,9 +69,9 @@ def animate_data_nbody(timesteps, pos_data, animation_frames, fig_title, line_po
     line3d_lst = []
     point3d_lst = []
     for i in range(1, obj_cnt + 1):
-        line3d = axanim.plot([], [], [], **line_point_options[f"line{i}"])
+        line3d = axanim.plot([], [], [], **line_point_options.line_options[i-1])
         line3d = line3d[0]
-        point3d = axanim.plot([], [], [], **line_point_options[f"point{i}"])
+        point3d = axanim.plot([], [], [], **line_point_options.point_options[i-1])
         point3d = point3d[0]
         line3d_lst.append(line3d)
         point3d_lst.append(point3d)
