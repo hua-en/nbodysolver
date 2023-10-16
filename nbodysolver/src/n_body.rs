@@ -76,6 +76,7 @@ pub fn simulate_nbody<S: Data<Elem = f64>>(
     // Create a copy of r_list and V_list
     let mut r_list: Array2<f64> = r_list_init.to_owned();
     let mut v_list: Array2<f64> = v_list_init.to_owned();
+    let mut a_list: Array2<f64> = all_planet_acc_nbody(r_list.view(), m_list.view(), g);
 
     // Initialise all datasets
     let all_time = Array::range(0., max_time, dt);
@@ -104,12 +105,13 @@ pub fn simulate_nbody<S: Data<Elem = f64>>(
         }
 
         // Calculate new position and velocity
-        let (new_r_list, new_v_list) = leapfrog(r_list.view(), v_list.view(), m_list.view(), dt, g);
+        let (new_r_list, new_v_list, new_a_list) = leapfrog(r_list.view(), v_list.view(), a_list.view(), m_list.view(), dt, g);
 
         // Set position and velocity to next timestep
         let old_r_list = mem::replace(&mut r_list, new_r_list);
         let old_v_list = mem::replace(&mut v_list, new_v_list);
-
+        a_list = new_a_list;
+        
         // Record current position and time in dataset
         all_t.push(time);
         all_r.push(old_r_list);
@@ -131,13 +133,11 @@ pub fn semi_implicit_euler() {}
 pub fn leapfrog<S: Data<Elem = f64>>(
     r_list: ArrayBase<S, Ix2>,
     v_list: ArrayBase<S, Ix2>,
+    a_list: ArrayBase<S, Ix2>,
     m_list: ArrayBase<S, Ix1>,
     dt: f64,
     g: f64,
-) -> (Array2<f64>, Array2<f64>) {
-    // Find the acceleration of the objects
-    let a_list = all_planet_acc_nbody(r_list.view(), m_list.view(), g);
-
+) -> (Array2<f64>, Array2<f64>, Array2<f64>) {
     // Find the new positions of the objects
     let new_r_list = &r_list + &v_list * dt + 0.5 * &a_list * (dt.powi(2));
 
@@ -147,7 +147,7 @@ pub fn leapfrog<S: Data<Elem = f64>>(
     // Find the new velocity of the objects
     let new_v_list = &v_list + 0.5 * (&a_list + &new_a_list) * dt;
 
-    (new_r_list, new_v_list)
+    (new_r_list, new_v_list, new_a_list)
 }
 
 pub fn process_data_nbody(pos_data: Vec<Array2<f64>>) -> Array3<f64> {
