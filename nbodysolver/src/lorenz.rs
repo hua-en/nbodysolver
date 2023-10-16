@@ -1,24 +1,25 @@
 use std::collections::HashMap;
+use num::{Float, traits::NumAssign, FromPrimitive};
 
-fn dxdt(x:f64, y:f64, tau:f64) -> f64 {
+fn dxdt<T: Float>(x:T, y:T, tau:T) -> T {
     tau * (y - x)
 }
 
-fn dydt(x: f64, y:f64, z:f64, rho:f64) -> f64 {
+fn dydt<T: Float>(x: T, y:T, z:T, rho:T) -> T {
     x * (rho - z) - y
 }
 
-fn dzdt(x: f64, y:f64, z:f64, beta:f64) -> f64 {
+fn dzdt<T: Float>(x: T, y:T, z:T, beta:T) -> T {
     x * y - beta * z
 }
 
-pub fn solve_lorenz(coords: (f64, f64, f64), max_time: f64, dt: f64, tau:f64, rho: f64, beta: f64) -> HashMap<String, Vec<f64>> {
+pub fn solve_lorenz<T: Float + NumAssign + FromPrimitive>(coords: (T, T, T), max_time: T, dt: T, tau:T, rho: T, beta: T) -> HashMap<String, Vec<T>> {
     let mut x = coords.0;
     let mut y = coords.1;
     let mut z = coords.2;
-    let mut t = 0.0;
+    let mut t = T::from_f64(0.0).unwrap();
 
-    let iteration_cnt = (max_time / dt).floor() as usize;
+    let iteration_cnt = (max_time / dt).floor().to_usize().unwrap();
 
     let mut x_lst = Vec::with_capacity(iteration_cnt);
     let mut y_lst = Vec::with_capacity(iteration_cnt);
