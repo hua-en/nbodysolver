@@ -2,12 +2,10 @@ use itertools::izip;
 use ndarray::{prelude::*, stack};
 use ndarray::{Array, Data};
 use ndarray_linalg::norm;
-use numpy::{IntoPyArray, PyArray2, PyArrayLike1, ToPyArray, TypeMustMatch};
-use pyo3::prelude::*;
 use std::iter::zip;
 use std::mem;
 
-fn all_planet_acc_nbody<S: Data<Elem = f64>>(
+pub fn all_planet_acc_nbody<S: Data<Elem = f64>>(
     r_list: &[ArrayBase<S, Ix1>],
     m_list: &[f64],
     g: f64,
@@ -28,7 +26,7 @@ fn all_planet_acc_nbody<S: Data<Elem = f64>>(
     acc_list
 }
 
-fn total_energy_nbody<S: Data<Elem = f64>>(
+pub fn total_energy_nbody<S: Data<Elem = f64>>(
     r_list: &[ArrayBase<S, Ix1>],
     v_list: &[ArrayBase<S, Ix1>],
     m_list: &[f64],
@@ -68,7 +66,7 @@ type NBodyResults = (
     Vec<f64>,
 );
 
-fn simulate_nbody<S: Data<Elem = f64>>(
+pub fn simulate_nbody<S: Data<Elem = f64>>(
     r_list_init: &[ArrayBase<S, Ix1>],
     v_list_init: &[ArrayBase<S, Ix1>],
     m_list: &[f64],
@@ -127,11 +125,11 @@ fn simulate_nbody<S: Data<Elem = f64>>(
     (all_t, all_r, all_v, all_ke, all_pe, all_te)
 }
 
-fn explicit_euler() {}
+pub fn explicit_euler() {}
 
-fn semi_implicit_euler() {}
+pub fn semi_implicit_euler() {}
 
-fn leapfrog<S: Data<Elem = f64>>(
+pub fn leapfrog<S: Data<Elem = f64>>(
     r_list: &[ArrayBase<S, Ix1>],
     v_list: &[ArrayBase<S, Ix1>],
     m_list: &[f64],
@@ -162,71 +160,9 @@ fn leapfrog<S: Data<Elem = f64>>(
     (new_r_list, new_v_list)
 }
 
-fn process_data_nbody(pos_data: Vec<Vec<Array1<f64>>>) -> Array2<f64> {
+pub fn process_data_nbody(pos_data: Vec<Vec<Array1<f64>>>) -> Array2<f64> {
     let rows = pos_data.len();
     let columns = pos_data[0].len() * 3;
     let flattened = pos_data.into_iter().flatten().flatten().collect();
     Array2::from_shape_vec((rows, columns), flattened).unwrap()
-}
-
-#[pyfunction]
-pub fn all_planet_acc_nbody_py<'py>(
-    py: Python<'py>,
-    r_list: Vec<PyArrayLike1<'py, f64, TypeMustMatch>>,
-    m_list: PyArrayLike1<'py, f64, TypeMustMatch>,
-    g: f64,
-) -> Vec<Vec<f64>> {
-    let r_list: Vec<ArrayView1<f64>> = r_list.iter().map(|v| v.as_array()).collect();
-    let acc_list: Vec<Vec<f64>> = all_planet_acc_nbody(&r_list, m_list.as_slice().unwrap(), g)
-        .iter()
-        .map(|a| a.to_vec())
-        .collect();
-    acc_list
-}
-
-#[pyfunction]
-pub fn total_energy_nbody_py<'py>(
-    py: Python<'py>,
-    r_list: Vec<PyArrayLike1<'py, f64, TypeMustMatch>>,
-    v_list: Vec<PyArrayLike1<'py, f64, TypeMustMatch>>,
-    m_list: PyArrayLike1<'py, f64, TypeMustMatch>,
-    g: f64,
-) -> (f64, f64, f64) {
-    let r_list: Vec<ArrayView1<f64>> = r_list.iter().map(|v| v.as_array()).collect();
-    let v_list: Vec<ArrayView1<f64>> = v_list.iter().map(|v| v.as_array()).collect();
-    let total_energy: (f64, f64, f64) =
-        total_energy_nbody(&r_list, &v_list, m_list.as_slice().unwrap(), g);
-    total_energy
-}
-
-#[pyfunction]
-pub fn simulate_nbody_and_process_py<'py>(
-    py: Python<'py>,
-    r_list: Vec<PyArrayLike1<'py, f64, TypeMustMatch>>,
-    v_list: Vec<PyArrayLike1<'py, f64, TypeMustMatch>>,
-    m_list: PyArrayLike1<'py, f64, TypeMustMatch>,
-    dt: f64,
-    max_time: f64,
-    g: f64,
-) -> (
-    Vec<f64>,
-    &'py PyArray2<f64>,
-    &'py PyArray2<f64>,
-    Vec<f64>,
-    Vec<f64>,
-    Vec<f64>,
-) {
-    let r_list: Vec<ArrayView1<f64>> = r_list.iter().map(|v| v.as_array()).collect();
-    let v_list: Vec<ArrayView1<f64>> = v_list.iter().map(|v| v.as_array()).collect();
-    let (all_t, all_r, all_v, all_ke, all_pe, all_te) = simulate_nbody(
-        &r_list,
-        &v_list,
-        m_list.as_slice().unwrap(),
-        dt,
-        max_time,
-        g,
-    );
-    let proc_r = process_data_nbody(all_r).into_pyarray(py);
-    let proc_v = process_data_nbody(all_v).into_pyarray(py);
-    (all_t, proc_r, proc_v, all_ke, all_pe, all_te)
 }

@@ -116,7 +116,7 @@ def total_energy_nbody(r_list, V_list, m_list, G=6.6743e-11):
 iterations = 1000
 
 
-def rust_acc_solver(): nbodysolver.all_planet_acc_nbody_py(
+def rust_acc_solver(): nbodysolver.all_planet_acc_nbody(
     sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["m_list"], 6.6743e-11)
 
 
@@ -124,7 +124,7 @@ def np_acc_solver(): all_planet_acc_nbody(
     sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["m_list"], 6.6743e-11)
 
 
-print("Rust Acceleration Results:", nbodysolver.all_planet_acc_nbody_py(
+print("Rust Acceleration Results:", nbodysolver.all_planet_acc_nbody(
     sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["m_list"], 6.6743e-11))
 print("Python Acceleration Results:", all_planet_acc_nbody(
     sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["m_list"], 6.6743e-11))
@@ -135,7 +135,7 @@ time_2 = timeit("np_acc_solver()", number=iterations, globals=globals())
 print(f"Rust Acceleration Solver: {time_1 / iterations} seconds")
 print(f"Numpy Acceleration Solver: {time_2 / iterations} seconds")
 
-def rust_energy_solver(): nbodysolver.total_energy_nbody_py(
+def rust_energy_solver(): nbodysolver.total_energy_nbody(
     sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["V_list"], 
     sun_earth_moon_system_np["m_list"], 6.6743e-11)
 
@@ -145,7 +145,7 @@ def np_energy_solver(): total_energy_nbody(
     sun_earth_moon_system_np["m_list"])
 
 
-print("Rust Energy Results:", nbodysolver.total_energy_nbody_py(
+print("Rust Energy Results:", nbodysolver.total_energy_nbody(
     sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["V_list"], 
     sun_earth_moon_system_np["m_list"], 6.6743e-11))
 print("Python Energy Results:", total_energy_nbody(
@@ -160,12 +160,12 @@ print(f"Numpy Energy Solver: {time_4 / iterations} seconds")
 
 
 def rust_3body_solver():
-    nbodysolver.simulate_nbody_and_process_py(sun_earth_moon_system_np['r_list'],
+    nbodysolver.simulate_nbody_and_process(sun_earth_moon_system_np['r_list'],
                                               sun_earth_moon_system_np['V_list'],
                                               sun_earth_moon_system_np['m_list'],
                                               1000., 31536000., 6.6743e-11)
 def rust_5body_solver():
-    nbodysolver.simulate_nbody_and_process_py(sun_earth_moon_system_modified['r_list'],
+    nbodysolver.simulate_nbody_and_process(sun_earth_moon_system_modified['r_list'],
                                                     sun_earth_moon_system_modified['V_list'],
                                                     sun_earth_moon_system_modified['m_list'],
                                                     1000., 31536000., 6.6743e-11)

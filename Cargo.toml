@@ -1,14 +1,7 @@
-[package]
-name = "nbodysolver"
-version = "0.1.0"
-edition = "2021"
+[workspace]
+members = ["nbodysolver"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-[lib]
-name = "nbodysolver"
-crate-type = ["cdylib"]
-
-[dependencies]
+[workspace.dependencies]
 itertools = "0.11.0"
 ndarray = "0.15.6"
 ndarray-linalg = "0.16.0"

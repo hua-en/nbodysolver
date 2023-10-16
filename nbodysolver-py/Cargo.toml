@@ -1,0 +1,21 @@
+[package]
+name = "nbodysolver-py"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "nbodysolver"
+crate-type = ["cdylib"]
+
+[dependencies]
+itertools = "0.11.0"
+ndarray = "0.15.6"
+ndarray-linalg = "0.16.0"
+num-traits = "0.2.17"
+numpy = "0.20.0"
+pyo3 = "0.20.0"
+nbodysolver = { path="../nbodysolver" }
+
+# Prevent package from thinking it's in the workspace
+[workspace]

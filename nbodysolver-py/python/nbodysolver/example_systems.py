@@ -1,8 +1,8 @@
 import numpy as np
-from nbodysolver.nbodysolver import simulate_nbody_and_process_py
+from nbodysolver.nbodysolver import simulate_nbody_and_process
 
 def simulate_system(system, dt, max_time, g):
-    return simulate_nbody_and_process_py(system["r_list"], system["V_list"], system["m_list"], dt, max_time, g)
+    return simulate_nbody_and_process(system["r_list"], system["V_list"], system["m_list"], dt, max_time, g)
 
 sun_earth_moon_system = {
     "r_list": [
