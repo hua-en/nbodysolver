@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 results = nbodysolver.simulate_system(nbodysolver.sun_earth_moon_system, 1000., 31536000., 6.6743e-11)
 results2 = nbodysolver.simulate_system(nbodysolver.sun_earth_moon_system_modified, 1000., 31536000., 6.6743e-11)
 results3 = nbodysolver.simulate_system(nbodysolver.figure_8_system, 0.01, 30., 1.)
-
+results4 = nbodysolver.simulate_system_np(nbodysolver.sun_earth_moon_system_np, 1000., 31536000., 6.6743e-11)
 
 #--------------------------------------------- Plot ----------------------------------------------#
 fig, ax = nbodysolver.plot_position_nbody(results[1], "Sun Earth Moon System")

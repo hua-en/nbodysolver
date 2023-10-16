@@ -11,13 +11,13 @@ pub fn all_planet_acc_nbody<S: Data<Elem = f64>>(
     m_list: ArrayBase<S, Ix1>,
     g: f64,
 ) -> Array2<f64> {
-    let planet_cnt = r_list.len();
+    let planet_cnt = r_list.nrows();
     let mut acc_list = Array::zeros(r_list.raw_dim());
 
     for i in 0..planet_cnt {
         for j in 0..planet_cnt {
             if i != j {
-                let rij = &r_list.index_axis(Axis(0), i) - &r_list.index_axis(Axis(0), j);
+                let rij = &r_list.row(i) - &r_list.row(j);
                 acc_list.row_mut(i).add_assign(&((-g * m_list[j] * (&rij)) / (norm::Norm::norm_l2(&rij).powi(3))))
             }
         }
@@ -40,11 +40,11 @@ pub fn total_energy_nbody<S: Data<Elem = f64>>(
     }
 
     // Total Potential Energy
-    let planet_cnt = r_list.len();
+    let planet_cnt = r_list.nrows();
     for i in 0..(planet_cnt - 1) {
         for j in (i + 1)..planet_cnt {
             potential_energy +=
-                (-g * m_list[i] * m_list[j]) / norm::Norm::norm_l2(&(&r_list.index_axis(Axis(0), i) - &r_list.index_axis(Axis(0), j)));
+                (-g * m_list[i] * m_list[j]) / norm::Norm::norm_l2(&(&r_list.row(i) - &r_list.row(j)));
         }
     }
 
