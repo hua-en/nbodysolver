@@ -1,6 +1,14 @@
 [workspace]
 members = ["nbodysolver"]
 
+[workspace.package]
+authors = ["Lim Hua En"]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/shawn1368/nbodysolver"
+
 [workspace.dependencies]
 itertools = "0.11.0"
 ndarray = "0.15.6"
