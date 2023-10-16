@@ -67,7 +67,7 @@ sun_earth_moon_system_modified = {
     ])}
 
 
-def all_planet_acc_nbody(r_list, m_list, G=6.6743e-11):
+def all_planet_acc_nbody(r_list, m_list, g=6.6743e-11):
     acc_list = []
     planet_cnt = len(r_list)
 
@@ -78,13 +78,13 @@ def all_planet_acc_nbody(r_list, m_list, G=6.6743e-11):
                 ri = r_list[i]
                 rj = r_list[j]
                 mj = m_list[j]
-                i_acc += (-G * mj * (ri - rj)) / (np.linalg.norm(ri - rj) ** 3)
+                i_acc += (-g * mj * (ri - rj)) / (np.linalg.norm(ri - rj) ** 3)
         acc_list.append(i_acc)
 
     return acc_list
 
 
-def total_energy_nbody(r_list, V_list, m_list, G=6.6743e-11):
+def total_energy_nbody(r_list, V_list, m_list, g=6.6743e-11):
     """
     Calculates the kinetic energy, potential energy and total energy in the system, 
     given the current positions, velocities and masses of the objects in the system.
@@ -106,7 +106,7 @@ def total_energy_nbody(r_list, V_list, m_list, G=6.6743e-11):
             mj = m_list[j]
             ri = r_list[i]
             rj = r_list[j]
-            potential_energy += (-G * mi * mj) / (np.linalg.norm(ri - rj))
+            potential_energy += (-g * mi * mj) / (np.linalg.norm(ri - rj))
 
     # Return the KE, PE and Total Energy (TE)
     total_energy = kinetic_energy + potential_energy
@@ -117,17 +117,23 @@ iterations = 1000
 
 
 def rust_acc_solver(): nbodysolver.all_planet_acc_nbody(
-    sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["m_list"], 6.6743e-11)
+    sun_earth_moon_system_np["r_list"], 
+    sun_earth_moon_system_np["m_list"], 
+    g=6.6743e-11)
 
 
 def np_acc_solver(): all_planet_acc_nbody(
-    sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["m_list"], 6.6743e-11)
+    sun_earth_moon_system_np["r_list"], 
+    sun_earth_moon_system_np["m_list"], 
+    g=6.6743e-11)
 
 
 print("Rust Acceleration Results:", nbodysolver.all_planet_acc_nbody(
-    sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["m_list"], 6.6743e-11))
+    sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["m_list"], 
+    g=6.6743e-11))
 print("Python Acceleration Results:", all_planet_acc_nbody(
-    sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["m_list"], 6.6743e-11))
+    sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["m_list"], 
+    g=6.6743e-11))
 
 time_1 = timeit("rust_acc_solver()", number=iterations, globals=globals())
 time_2 = timeit("np_acc_solver()", number=iterations, globals=globals())
@@ -137,7 +143,7 @@ print(f"Numpy Acceleration Solver: {time_2 / iterations} seconds")
 
 def rust_energy_solver(): nbodysolver.total_energy_nbody(
     sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["V_list"], 
-    sun_earth_moon_system_np["m_list"], 6.6743e-11)
+    sun_earth_moon_system_np["m_list"], g=6.6743e-11)
 
 
 def np_energy_solver(): total_energy_nbody(
@@ -147,7 +153,7 @@ def np_energy_solver(): total_energy_nbody(
 
 print("Rust Energy Results:", nbodysolver.total_energy_nbody(
     sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["V_list"], 
-    sun_earth_moon_system_np["m_list"], 6.6743e-11))
+    sun_earth_moon_system_np["m_list"], g=6.6743e-11))
 print("Python Energy Results:", total_energy_nbody(
     sun_earth_moon_system_np["r_list"], sun_earth_moon_system_np["V_list"], 
     sun_earth_moon_system_np["m_list"]))
@@ -163,12 +169,12 @@ def rust_3body_solver():
     nbodysolver.simulate_nbody_and_process(sun_earth_moon_system_np['r_list'],
                                               sun_earth_moon_system_np['V_list'],
                                               sun_earth_moon_system_np['m_list'],
-                                              1000., 31536000., 6.6743e-11)
+                                              1000., 31536000., g=6.6743e-11)
 def rust_5body_solver():
     nbodysolver.simulate_nbody_and_process(sun_earth_moon_system_modified['r_list'],
                                                     sun_earth_moon_system_modified['V_list'],
                                                     sun_earth_moon_system_modified['m_list'],
-                                                    1000., 31536000., 6.6743e-11)
+                                                    1000., 31536000., g=6.6743e-11)
 
 
 time_6 = timeit("rust_3body_solver()", number=100, globals=globals())

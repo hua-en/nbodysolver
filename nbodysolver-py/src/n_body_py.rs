@@ -4,7 +4,7 @@ use pyo3::prelude::*;
 use nbodysolver::n_body;
 
 #[pyfunction]
-#[pyo3(name = "all_planet_acc_nbody")]
+#[pyo3(name = "all_planet_acc_nbody", signature=(r_list, m_list, g=6.6743e-11))]
 pub fn all_planet_acc_nbody_py<'py>(
     py: Python<'py>,
     r_list: Vec<PyArrayLike1<'py, f64, TypeMustMatch>>,
@@ -20,7 +20,7 @@ pub fn all_planet_acc_nbody_py<'py>(
 }
 
 #[pyfunction]
-#[pyo3(name = "total_energy_nbody")]
+#[pyo3(name = "total_energy_nbody", signature=(r_list, v_list, m_list, g=6.6743e-11))]
 pub fn total_energy_nbody_py<'py>(
     py: Python<'py>,
     r_list: Vec<PyArrayLike1<'py, f64, TypeMustMatch>>,
@@ -36,7 +36,7 @@ pub fn total_energy_nbody_py<'py>(
 }
 
 #[pyfunction]
-#[pyo3(name = "simulate_nbody_and_process")]
+#[pyo3(name = "simulate_nbody_and_process", signature=(r_list, v_list, m_list, dt, max_time, g=6.6743e-11))]
 pub fn simulate_nbody_and_process_py<'py>(
     py: Python<'py>,
     r_list: Vec<PyArrayLike1<'py, f64, TypeMustMatch>>,
