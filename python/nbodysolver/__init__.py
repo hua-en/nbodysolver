@@ -1,4 +1,6 @@
-from .nbodysolver import *
+from nbodysolver.nbodysolver import *
+from nbodysolver.plotting import *
+from nbodysolver.example_systems import *
 
 
 __doc__ = nbodysolver.__doc__
