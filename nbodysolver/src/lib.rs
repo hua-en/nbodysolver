@@ -1,5 +1,6 @@
 pub mod lorenz;
 pub mod n_body;
+pub mod n_body_faster;
 
 pub fn add(left: usize, right: usize) -> usize {
     left + right
