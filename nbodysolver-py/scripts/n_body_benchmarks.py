@@ -1,7 +1,6 @@
 import nbodysolver
 from nbodysolver import sun_earth_moon_system, sun_earth_moon_system_modified
 import numpy as np
-import matplotlib.pyplot as plt
 from timeit import timeit
 
 def all_planet_acc_nbody(r_list, m_list, g=6.6743e-11):

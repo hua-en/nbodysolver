@@ -2,9 +2,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
 import matplotlib.animation as animation
+from typing import Any
 
 class AnimationOptions:
-    def __init__(self, line_options, point_options):
+    def __init__(self, line_options: list[dict[str, Any]], 
+                 point_options: list[dict[str, Any]]):
         self.line_options = line_options
         self.point_options = point_options
 
@@ -31,23 +33,27 @@ def animate_data_nbody(timesteps: npt.NDArray[np.float64],
                        fig_title: str, 
                        line_point_options: AnimationOptions, 
                        animation_interval: int=25):
-    """Animates a dataset using matplotlib.animate, given a dataset and the number of frames to animate.
-    Returns the matplotlib animation object, which can be rendered into a video with anim.save() 
+    """Animates a dataset using matplotlib.animate, 
+    given a dataset and the number of frames to animate.
+    
+    Returns the matplotlib animation object, 
+    which can be rendered into a video with anim.save() 
     and/or embedded as a HTML video with HTML(anim.to_html5_video()).
 
     The figure title can be specified with fig_title.
-    The properties of the lines and points in the plot, such as the colours, can be customised with line_point_options.
+    The properties of the lines and points in the plot, such as the colours, 
+    can be customised with line_point_options.
 
     Args:
         timesteps: Time data obtained from simulate_nbody.
         pos_data: Position data obtained from simulate_nbody.
-        animation_frames (int): Number of frames to animate the simulation for. 40 frames roughly correspond to one second.
+        animation_frames (int): Number of frames to animate the simulation for. 
+        40 frames roughly correspond to one second.
         fig_title: The title of the animation.
-        line_point_options: Sets customisation options for the lines and points in the animation. 
-                            The dict should be provided in the following format:
-                            line_point_options = {"line1": {"label": "Sun", "color": "Orange"}, "line2": ..., "line3": ..., 
-                                                  "point1": ..., "point2": ..., "point3": ...}
-        animation_interval (optional): Sets the time between animation frames. Default = 25ms.
+        line_point_options: Sets customisation options for the lines 
+        and points in the animation. 
+        animation_interval (optional): Sets the time between animation frames. 
+        Default = 25ms.
     """
 
     # --- Process Dataset ---------------------------------------------#

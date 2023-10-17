@@ -3,7 +3,8 @@ from nbodysolver.plotting import *
 from nbodysolver.example_systems import *
 
 
-print(nbodysolver.__module__)
-__doc__ = nbodysolver.__doc__ # type: ignore
-if hasattr(nbodysolver, "__all__"): # type: ignore
-    __all__ = nbodysolver.__all__ # type: ignore
+# This code basically adds all the docstrings and functions 
+# from the rust library nbodysolver
+__doc__ = nbodysolver.__doc__ # type: ignore  # noqa: F405
+if hasattr(nbodysolver, "__all__"): # type: ignore # noqa: F405
+    __all__ = nbodysolver.__all__ # type: ignore # noqa: F405

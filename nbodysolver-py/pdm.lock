@@ -6,7 +6,7 @@ groups = ["default", "dev"]
 cross_platform = true
 static_urls = false
 lock_version = "4.3"
-content_hash = "sha256:ed604ce8e31e53a7b58f2b8ed4c66154177d77260ed06f6f69f2ce1488dc402f"
+content_hash = "sha256:32bc1f9ec2c0d5ab78c11152516537d69b0d29b0a43cf2b86dc3f9a05ccb73fe"
 
 [[package]]
 name = "appnope"
@@ -282,6 +282,19 @@ files = [
 ]
 
 [[package]]
+name = "nodeenv"
+version = "1.8.0"
+requires_python = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*"
+summary = "Node.js virtual environment builder"
+dependencies = [
+    "setuptools",
+]
+files = [
+    {file = "nodeenv-1.8.0-py2.py3-none-any.whl", hash = "sha256:df865724bb3c3adc86b3876fa209771517b0cfe596beff01a92700e0e8be4cec"},
+    {file = "nodeenv-1.8.0.tar.gz", hash = "sha256:d51e0c37e64fbf47d017feac3145cdbb58836d7eee8c6f6d3b6880c5456227d2"},
+]
+
+[[package]]
 name = "numpy"
 version = "1.25.2"
 requires_python = ">=3.9"
@@ -443,6 +456,19 @@ files = [
 ]
 
 [[package]]
+name = "pyright"
+version = "1.1.331"
+requires_python = ">=3.7"
+summary = "Command line wrapper for pyright"
+dependencies = [
+    "nodeenv>=1.6.0",
+]
+files = [
+    {file = "pyright-1.1.331-py3-none-any.whl", hash = "sha256:d200a01794e7f2a04d5042a6c3abee36ce92780287d3037edfc3604d45488f0e"},
+    {file = "pyright-1.1.331.tar.gz", hash = "sha256:c3e7b86154cac86c3bd61ea0f963143d001c201e246825aaabdddfcce5d04293"},
+]
+
+[[package]]
 name = "pytest"
 version = "7.4.2"
 requires_python = ">=3.7"
@@ -469,6 +495,16 @@ dependencies = [
 files = [
     {file = "python-dateutil-2.8.2.tar.gz", hash = "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86"},
     {file = "python_dateutil-2.8.2-py2.py3-none-any.whl", hash = "sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9"},
+]
+
+[[package]]
+name = "setuptools"
+version = "68.2.2"
+requires_python = ">=3.8"
+summary = "Easily download, build, install, upgrade, and uninstall Python packages"
+files = [
+    {file = "setuptools-68.2.2-py3-none-any.whl", hash = "sha256:b454a35605876da60632df1a60f736524eb73cc47bbc9f3f1ef1b644de74fd2a"},
+    {file = "setuptools-68.2.2.tar.gz", hash = "sha256:4ac1475276d2f1c48684874089fefcd83bd7162ddaafb81fac866ba0db282a87"},
 ]
 
 [[package]]
