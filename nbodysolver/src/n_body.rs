@@ -1,4 +1,3 @@
-use itertools::izip;
 use ndarray::{prelude::*, stack};
 use ndarray::{Array, Data};
 use ndarray_linalg::norm;
