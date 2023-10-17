@@ -37,5 +37,5 @@ dev = [
 ]
 
 [tool.pdm.scripts]
-benchmarks = {cmd = "python ./scripts/n_body_benchmarks.py"}
-plots = {cmd = "python ./scripts/n_body_plots.py"}
+benchmarks = {cmd = "make benchmarks"}
+plots = {cmd = "make plots"}
