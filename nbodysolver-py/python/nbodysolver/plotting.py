@@ -119,3 +119,42 @@ def animate_data_nbody(timesteps: npt.NDArray[np.float64],
                                    interval=animation_interval, blit=True)
 
     return anim
+
+def plot_energy(time: npt.NDArray[np.float64], 
+                KE: npt.NDArray[np.float64], 
+                PE: npt.NDArray[np.float64], 
+                TE: npt.NDArray[np.float64], fig_title: str):
+    """
+    Simple plotting function that plots the kinetic energy, potential energy 
+    and total energy of the system on a graph.
+    """
+    # Plot data
+    fig, ax = plt.subplots()
+    ax.plot(time, KE, label="Kinetic Energy")
+    ax.plot(time, PE, label="Gravitational Potential Energy")
+    ax.plot(time, TE, label="Total Energy")
+    ax.set_title(fig_title)
+    ax.set_xlabel("Time/s")
+    ax.set_ylabel("Energy/J")
+    ax.legend(loc="upper right")
+    
+    return fig, ax
+
+def plot_velocity_nbody(time: npt.NDArray[np.float64], 
+                        velocity_data: npt.NDArray[np.float64], fig_title: str):
+    """
+    Simple plotting function that plots the velocities of the objects on a graph.
+    """
+    # Process data
+    velocity_data = np.linalg.norm(velocity_data, axis=2)
+    
+    # Plot data
+    fig, ax = plt.subplots()
+    for i in range(0, velocity_data.shape[1]):
+        ax.plot(time, velocity_data[:, i], label=f"Object {i+1}")
+    ax.set_xlabel("Time/s")
+    ax.set_ylabel("Velocity/$ms^{-1}$")
+    ax.set_title(fig_title)
+    ax.legend(loc="upper right")
+    
+    return fig, ax

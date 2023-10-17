@@ -15,6 +15,10 @@ plt.show()
 fig8, ax8 = nbodysolver.plot_position_nbody(results3[1], "Figure 8 System")
 plt.show()
 
+fige, axe = nbodysolver.plot_energy(results2[0], results2[3], results2[4], results2[5], "Energy in 5 body problem")
+plt.show()
+figv, axv = nbodysolver.plot_velocity_nbody(results2[0], results2[2], "Velocities in 5 body problem")
+plt.show()
 
 #-------------------------------------------- Animate --------------------------------------------#
 nbody_customoptions = {"line1":  {"label": "Sun", "color": "Orange"},                               # Options for Line 1 (Sun)
