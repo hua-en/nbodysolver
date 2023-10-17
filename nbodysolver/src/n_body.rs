@@ -18,7 +18,9 @@ pub fn all_planet_acc_nbody<S: Data<Elem = f64>>(
         for j in 0..planet_cnt {
             if i != j {
                 let rij = &r_list.row(i) - &r_list.row(j);
-                acc_list.row_mut(i).add_assign(&((-g * m_list[j] * (&rij)) / (norm::Norm::norm_l2(&rij).powi(3))))
+                acc_list
+                    .row_mut(i)
+                    .add_assign(&((-g * m_list[j] * (&rij)) / (norm::Norm::norm_l2(&rij).powi(3))))
             }
         }
     }
@@ -43,8 +45,8 @@ pub fn total_energy_nbody<S: Data<Elem = f64>>(
     let planet_cnt = r_list.nrows();
     for i in 0..(planet_cnt - 1) {
         for j in (i + 1)..planet_cnt {
-            potential_energy +=
-                (-g * m_list[i] * m_list[j]) / norm::Norm::norm_l2(&(&r_list.row(i) - &r_list.row(j)));
+            potential_energy += (-g * m_list[i] * m_list[j])
+                / norm::Norm::norm_l2(&(&r_list.row(i) - &r_list.row(j)));
         }
     }
 
@@ -105,13 +107,20 @@ pub fn simulate_nbody<S: Data<Elem = f64>>(
         }
 
         // Calculate new position and velocity
-        let (new_r_list, new_v_list, new_a_list) = leapfrog(r_list.view(), v_list.view(), a_list.view(), m_list.view(), dt, g);
+        let (new_r_list, new_v_list, new_a_list) = leapfrog(
+            r_list.view(),
+            v_list.view(),
+            a_list.view(),
+            m_list.view(),
+            dt,
+            g,
+        );
 
         // Set position and velocity to next timestep
         let old_r_list = mem::replace(&mut r_list, new_r_list);
         let old_v_list = mem::replace(&mut v_list, new_v_list);
         a_list = new_a_list;
-        
+
         // Record current position and time in dataset
         all_t.push(time);
         all_r.push(old_r_list);

@@ -1,18 +1,25 @@
-use num::{Float, traits::NumAssign, FromPrimitive};
+use num::{traits::NumAssign, Float, FromPrimitive};
 
-fn dxdt<T: Float>(x:T, y:T, tau:T) -> T {
+fn dxdt<T: Float>(x: T, y: T, tau: T) -> T {
     tau * (y - x)
 }
 
-fn dydt<T: Float>(x: T, y:T, z:T, rho:T) -> T {
+fn dydt<T: Float>(x: T, y: T, z: T, rho: T) -> T {
     x * (rho - z) - y
 }
 
-fn dzdt<T: Float>(x: T, y:T, z:T, beta:T) -> T {
+fn dzdt<T: Float>(x: T, y: T, z: T, beta: T) -> T {
     x * y - beta * z
 }
 
-pub fn solve_lorenz<T: Float + NumAssign + FromPrimitive>(coords: (T, T, T), max_time: T, dt: T, tau:T, rho: T, beta: T) -> (Vec<T>, Vec<T>, Vec<T>, Vec<T>) {
+pub fn solve_lorenz<T: Float + NumAssign + FromPrimitive>(
+    coords: (T, T, T),
+    max_time: T,
+    dt: T,
+    tau: T,
+    rho: T,
+    beta: T,
+) -> (Vec<T>, Vec<T>, Vec<T>, Vec<T>) {
     let mut x = coords.0;
     let mut y = coords.1;
     let mut z = coords.2;
@@ -37,6 +44,6 @@ pub fn solve_lorenz<T: Float + NumAssign + FromPrimitive>(coords: (T, T, T), max
         z += dzdt(x, y, z, beta) * dt;
         t += dt;
     }
-    
+
     (x_lst, y_lst, z_lst, t_lst)
 }
