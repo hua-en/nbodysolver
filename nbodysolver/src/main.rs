@@ -1,4 +1,4 @@
-use nbodysolver::n_body_faster::all_planet_acc_nbody;
+use nbodysolver::n_body::all_planet_acc_nbody;
 use ndarray::prelude::*;
 
 fn main() {
