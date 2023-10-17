@@ -31,6 +31,8 @@ features = ["pyo3/extension-module"]
 dev = [
     "ipython>=8.16.1",
     "py-spy>=0.3.14",
+    "pytest>=7.4.2",
+    "mypy>=1.6.0",
 ]
 
 [tool.pdm.scripts]
