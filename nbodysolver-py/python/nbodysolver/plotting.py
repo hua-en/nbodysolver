@@ -4,21 +4,22 @@ import numpy.typing as npt
 import matplotlib.animation as animation
 from typing import Any
 
-class AnimationOptions:
-    def __init__(self, line_options: list[dict[str, Any]], 
-                 point_options: list[dict[str, Any]]):
-        self.line_options = line_options
-        self.point_options = point_options
-
-def plot_position_nbody(pos_data: npt.NDArray[np.float64], fig_title: str):
+def plot_position_nbody(pos_data: npt.NDArray[np.float64], fig_title: str, 
+                        line_options: list[dict[str, Any]] | None = None):
     """
     Simple plotting function that plots the dataset on a 3D figure and axis.
     """
+    # Check if line_options is initialised
+    # If not, initialise default labels
+    obj_cnt = pos_data.shape[1]
+    if line_options is None:
+        line_options = [{"label":f"Object {i+1}"} for i in range(obj_cnt)]
+    
     # Plot data
     fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
-    for i in range(0, pos_data.shape[1]):
+    for i in range(0, obj_cnt):
         ax.plot3D(pos_data[:, i, 0], pos_data[:, i, 1], pos_data[:, i, 2], 
-                  label=f"Object {i+1}")
+                  **line_options[i])
     ax.set_xlabel('x')
     ax.set_ylabel('y')
     ax.set_zlabel('z')
@@ -27,11 +28,11 @@ def plot_position_nbody(pos_data: npt.NDArray[np.float64], fig_title: str):
 
     return fig, ax
 
-def animate_data_nbody(timesteps: npt.NDArray[np.float64], 
-                       pos_data: npt.NDArray[np.float64], 
+def animate_data_nbody(pos_data: npt.NDArray[np.float64], 
                        animation_frames: int, 
                        fig_title: str, 
-                       line_point_options: AnimationOptions, 
+                       line_options: list[dict[str, Any]] | None = None,
+                       point_options: list[dict[str, Any]] | None = None, 
                        animation_interval: int=25):
     """Animates a dataset using matplotlib.animate, 
     given a dataset and the number of frames to animate.
@@ -58,7 +59,7 @@ def animate_data_nbody(timesteps: npt.NDArray[np.float64],
 
     # --- Process Dataset ---------------------------------------------#
     # Find number of timesteps in dataset
-    no_of_timesteps = len(timesteps)
+    no_of_timesteps = pos_data.shape[0]
 
     # Find number of objects in dataset
     obj_cnt = pos_data.shape[1]
@@ -69,15 +70,21 @@ def animate_data_nbody(timesteps: npt.NDArray[np.float64],
     min_z, max_z = np.min(pos_data[:, :, 2]), np.max(pos_data[:, :, 2])
 
     # --- Create Figure ----------------------------------------------#
+    # Check if options are set
+    if line_options is None:
+        line_options = [{"label":f"Object {i+1}"} for i in range(obj_cnt)]
+    if point_options is None:
+        point_options = [{"marker": "o", "ls": ""} for i in range(obj_cnt)]
+    
     # Create Lines and Points within the animation
     figanim, axanim = plt.subplots(subplot_kw={"projection": "3d"})
 
     line3d_lst = []
     point3d_lst = []
     for i in range(1, obj_cnt + 1):
-        line3d = axanim.plot([], [], [], **line_point_options.line_options[i-1])
+        line3d = axanim.plot([], [], [], **line_options[i-1])
         line3d = line3d[0]
-        point3d = axanim.plot([], [], [], **line_point_options.point_options[i-1])
+        point3d = axanim.plot([], [], [], **point_options[i-1])
         point3d = point3d[0]
         line3d_lst.append(line3d)
         point3d_lst.append(point3d)
@@ -129,16 +136,22 @@ def animate_data_nbody(timesteps: npt.NDArray[np.float64],
 def plot_energy(time: npt.NDArray[np.float64], 
                 KE: npt.NDArray[np.float64], 
                 PE: npt.NDArray[np.float64], 
-                TE: npt.NDArray[np.float64], fig_title: str):
+                TE: npt.NDArray[np.float64], fig_title: str,
+                line_options: list[dict[str, Any]] | None = None):
     """
     Simple plotting function that plots the kinetic energy, potential energy 
     and total energy of the system on a graph.
     """
     # Plot data
+    if line_options is None:
+        line_options = [{"label":"Kinetic Energy"}, 
+                        {"label":"Gravitational Potential Energy"}, 
+                        {"label":"Total Energy"}]
+
     fig, ax = plt.subplots()
-    ax.plot(time, KE, label="Kinetic Energy")
-    ax.plot(time, PE, label="Gravitational Potential Energy")
-    ax.plot(time, TE, label="Total Energy")
+    ax.plot(time, KE, **line_options[0])
+    ax.plot(time, PE, **line_options[1])
+    ax.plot(time, TE, **line_options[2])
     ax.set_title(fig_title)
     ax.set_xlabel("Time/s")
     ax.set_ylabel("Energy/J")
@@ -147,17 +160,23 @@ def plot_energy(time: npt.NDArray[np.float64],
     return fig, ax
 
 def plot_velocity_nbody(time: npt.NDArray[np.float64], 
-                        velocity_data: npt.NDArray[np.float64], fig_title: str):
+                        velocity_data: npt.NDArray[np.float64], fig_title: str,
+                        line_options: list[dict[str, Any]] | None = None):
     """
     Simple plotting function that plots the velocities of the objects on a graph.
     """
+    # Check if line_options is initialised
+    obj_cnt = velocity_data.shape[1]
+    if line_options is None:
+        line_options = [{"label":f"Object {i+1}"} for i in range(obj_cnt)]
+    
     # Process data
     velocity_data = np.linalg.norm(velocity_data, axis=2)
     
     # Plot data
     fig, ax = plt.subplots()
-    for i in range(0, velocity_data.shape[1]):
-        ax.plot(time, velocity_data[:, i], label=f"Object {i+1}")
+    for i in range(0, obj_cnt):
+        ax.plot(time, velocity_data[:, i], **line_options[i])
     ax.set_xlabel("Time/s")
     ax.set_ylabel("Velocity/$ms^{-1}$")
     ax.set_title(fig_title)

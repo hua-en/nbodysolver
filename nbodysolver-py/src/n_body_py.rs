@@ -1,7 +1,7 @@
 use nbodysolver::n_body;
-use ndarray::{prelude::*, stack};
+use ndarray::prelude::*;
 use numpy::{
-    IntoPyArray, PyArray1, PyArray2, PyArray3, PyArrayLike1, PyArrayLike2, ToPyArray, TypeMustMatch,
+    IntoPyArray, PyArray1, PyArray2, PyArray3, PyArrayLike1, PyArrayLike2, TypeMustMatch,
 };
 use pyo3::prelude::*;
 
@@ -21,7 +21,6 @@ pub fn all_planet_acc_nbody_py<'py>(
 #[pyfunction]
 #[pyo3(name = "total_energy_nbody", signature=(r_list, v_list, m_list, g=6.6743e-11))]
 pub fn total_energy_nbody_py<'py>(
-    py: Python<'py>,
     r_list: PyArrayLike2<'py, f64, TypeMustMatch>,
     v_list: PyArrayLike2<'py, f64, TypeMustMatch>,
     m_list: PyArrayLike1<'py, f64, TypeMustMatch>,
