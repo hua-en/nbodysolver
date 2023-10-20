@@ -1,16 +1,18 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import numpy.typing as npt
 import matplotlib.animation as animation
+from nbodysolver.nbodywrapper import NBodyResults
 from typing import Any
 
-def plot_position_nbody(pos_data: npt.NDArray[np.float64], fig_title: str, 
+def plot_position_nbody(dataset: NBodyResults, fig_title: str, 
                         line_options: list[dict[str, Any]] | None = None):
     """
     Simple plotting function that plots the dataset on a 3D figure and axis.
     """
     # Check if line_options is initialised
     # If not, initialise default labels
+    pos_data = dataset.all_r
+    
     obj_cnt = pos_data.shape[1]
     if line_options is None:
         line_options = [{"label":f"Object {i+1}"} for i in range(obj_cnt)]
@@ -28,7 +30,7 @@ def plot_position_nbody(pos_data: npt.NDArray[np.float64], fig_title: str,
 
     return fig, ax
 
-def animate_data_nbody(pos_data: npt.NDArray[np.float64], 
+def animate_data_nbody(dataset: NBodyResults, 
                        animation_frames: int, 
                        fig_title: str, 
                        line_options: list[dict[str, Any]] | None = None,
@@ -58,6 +60,9 @@ def animate_data_nbody(pos_data: npt.NDArray[np.float64],
     """
 
     # --- Process Dataset ---------------------------------------------#
+    # Get position data
+    pos_data = dataset.all_r
+    
     # Find number of timesteps in dataset
     no_of_timesteps = pos_data.shape[0]
 
@@ -133,15 +138,18 @@ def animate_data_nbody(pos_data: npt.NDArray[np.float64],
 
     return anim
 
-def plot_energy(time: npt.NDArray[np.float64], 
-                KE: npt.NDArray[np.float64], 
-                PE: npt.NDArray[np.float64], 
-                TE: npt.NDArray[np.float64], fig_title: str,
+def plot_energy(dataset: NBodyResults, fig_title: str,
                 line_options: list[dict[str, Any]] | None = None):
     """
     Simple plotting function that plots the kinetic energy, potential energy 
     and total energy of the system on a graph.
     """
+    # Obtain data
+    time = dataset.all_time
+    KE = dataset.all_ke
+    PE = dataset.all_pe
+    TE = dataset.all_te
+    
     # Plot data
     if line_options is None:
         line_options = [{"label":"Kinetic Energy"}, 
@@ -159,12 +167,14 @@ def plot_energy(time: npt.NDArray[np.float64],
     
     return fig, ax
 
-def plot_velocity_nbody(time: npt.NDArray[np.float64], 
-                        velocity_data: npt.NDArray[np.float64], fig_title: str,
+def plot_velocity_nbody(dataset: NBodyResults, fig_title: str,
                         line_options: list[dict[str, Any]] | None = None):
     """
     Simple plotting function that plots the velocities of the objects on a graph.
     """
+    time = dataset.all_time
+    velocity_data = dataset.all_v
+    
     # Check if line_options is initialised
     obj_cnt = velocity_data.shape[1]
     if line_options is None:

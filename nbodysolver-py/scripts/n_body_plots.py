@@ -15,19 +15,18 @@ results2 = nbodysolver.simulate_system(nbodysolver.sun_earth_moon_system_modifie
 results3 = nbodysolver.simulate_system(nbodysolver.figure_8_system, 0.01, 30., 1.)
 
 #--------------------------------------------- Plot -----------------------------------#
-fig, ax = nbodysolver.plot_position_nbody(results[1], "Sun Earth Moon System", line_options)
+fig, ax = nbodysolver.plot_position_nbody(results, "Sun Earth Moon System", line_options)
 plt.show()
-fign, axn = nbodysolver.plot_position_nbody(results2[1], "5 body problem")
+fign, axn = nbodysolver.plot_position_nbody(results2, "5 body problem")
 plt.show()
-fig8, ax8 = nbodysolver.plot_position_nbody(results3[1], "Figure 8 System")
+fig8, ax8 = nbodysolver.plot_position_nbody(results3, "Figure 8 System")
 plt.show()
 
-fige, axe = nbodysolver.plot_energy(results2[0], results2[3], 
-                                    results2[4], results2[5], 
-                                    "Energy in 5 body problem")
+fige, axe = nbodysolver.plot_energy(results2, "Energy in 5 body problem")
+
 plt.show()
-figv, axv = nbodysolver.plot_velocity_nbody(results2[0], results2[2], 
-                                            "Velocities in 5 body problem")
+figv, axv = nbodysolver.plot_velocity_nbody(results2, "Velocities in 5 body problem")
+
 plt.show()
 
 #-------------------------------------------- Animate ---------------------------------#
@@ -48,7 +47,7 @@ point_options=[
 
 
 # Create the animation
-nbody_animation = nbodysolver.animate_data_nbody(results2[1], 200, 
+nbody_animation = nbodysolver.animate_data_nbody(results2, 200, 
                                                  "N-Body System", 
                                                  line_options,
                                                  point_options)

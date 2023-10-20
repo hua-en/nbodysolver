@@ -1,6 +1,7 @@
 from nbodysolver.nbodysolver import *
 from nbodysolver.plotting import *
 from nbodysolver.example_systems import *
+from nbodysolver.nbodywrapper import *
 
 
 # This code basically adds all the docstrings and functions 

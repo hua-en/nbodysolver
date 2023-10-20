@@ -1,25 +1,5 @@
 import numpy as np
-import numpy.typing as npt
-from nbodysolver.nbodysolver import simulate_nbody_and_process
-
-
-class NBodySystem:
-    def __init__(self, 
-                 r_list: npt.NDArray[np.float64], 
-                 v_list: npt.NDArray[np.float64], 
-                 m_list: npt.NDArray[np.float64]):
-        self.r_list = r_list
-        self.v_list = v_list
-        self.m_list = m_list
-
-
-def simulate_system(system: NBodySystem, dt: float, 
-                    max_time: float, g: float = 6.6743e-11) -> \
-    tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64], 
-          npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-    return simulate_nbody_and_process(system.r_list, 
-                                      system.v_list, 
-                                      system.m_list, dt, max_time, g)
+from nbodysolver.nbodywrapper import NBodySystem
 
 
 sun_earth_moon_system = NBodySystem(
