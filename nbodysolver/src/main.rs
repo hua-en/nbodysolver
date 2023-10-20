@@ -1,5 +1,5 @@
 use std::{fs::{File, self}, io::Write};
-use nbodysolver::n_body::all_planet_acc_nbody;
+use nbodysolver::n_body_core::all_planet_acc_nbody;
 use ndarray::prelude::*;
 use serde::{Serialize, Deserialize};
 

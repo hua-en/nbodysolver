@@ -1,4 +1,4 @@
-use nbodysolver::n_body;
+use nbodysolver::n_body_core;
 use ndarray::prelude::*;
 use numpy::{
     IntoPyArray, PyArray1, PyArray2, PyArray3, PyArrayLike1, PyArrayLike2, TypeMustMatch,
@@ -14,7 +14,7 @@ pub fn all_planet_acc_nbody_py<'py>(
     g: f64,
 ) -> &'py PyArray2<f64> {
     let acc_list: Array2<f64> =
-        n_body::all_planet_acc_nbody(r_list.as_array(), m_list.as_array(), g);
+        n_body_core::all_planet_acc_nbody(r_list.as_array(), m_list.as_array(), g);
     acc_list.into_pyarray(py)
 }
 
@@ -27,7 +27,7 @@ pub fn total_energy_nbody_py<'py>(
     g: f64,
 ) -> (f64, f64, f64) {
     let total_energy: (f64, f64, f64) =
-        n_body::total_energy_nbody(r_list.as_array(), v_list.as_array(), m_list.as_array(), g);
+        n_body_core::total_energy_nbody(r_list.as_array(), v_list.as_array(), m_list.as_array(), g);
     total_energy
 }
 
@@ -49,7 +49,7 @@ pub fn simulate_nbody_and_process_py<'py>(
     &'py PyArray1<f64>,
     &'py PyArray1<f64>,
 ) {
-    let (all_t, all_r, all_v, all_ke, all_pe, all_te) = n_body::simulate_nbody(
+    let (all_t, all_r, all_v, all_ke, all_pe, all_te) = n_body_core::simulate_nbody(
         r_list.as_array(),
         v_list.as_array(),
         m_list.as_array(),
@@ -57,8 +57,8 @@ pub fn simulate_nbody_and_process_py<'py>(
         max_time,
         g,
     );
-    let proc_r = n_body::process_data_nbody(all_r).into_pyarray(py);
-    let proc_v = n_body::process_data_nbody(all_v).into_pyarray(py);
+    let proc_r = n_body_core::process_data_nbody(all_r).into_pyarray(py);
+    let proc_v = n_body_core::process_data_nbody(all_v).into_pyarray(py);
     (
         all_t.into_pyarray(py),
         proc_r,
