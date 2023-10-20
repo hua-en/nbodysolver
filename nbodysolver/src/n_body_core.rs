@@ -159,6 +159,8 @@ pub fn leapfrog<S: Data<Elem = f64>>(
 }
 
 pub fn process_data_nbody(pos_data: Vec<Array2<f64>>) -> Array3<f64> {
-    let pos_data_view: Vec<ArrayView2<f64>> = pos_data.iter().map(|v| v.view()).collect();
-    stack(Axis(0), &pos_data_view).unwrap()
+    let d1 = pos_data.len();
+    let (d2, d3) = pos_data[0].dim();
+    let flat: Vec<f64> = pos_data.into_iter().flatten().collect();
+    Array3::from_shape_vec((d1, d2, d3), flat).unwrap()
 }
