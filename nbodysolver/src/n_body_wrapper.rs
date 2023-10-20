@@ -2,18 +2,18 @@ use crate::n_body_core::{process_data_nbody, simulate_nbody};
 use ndarray::prelude::*;
 
 pub struct NBodySystem {
-    r_list: Array2<f64>,
-    v_list: Array2<f64>,
-    m_list: Array1<f64>,
+    pub r_list: Array2<f64>,
+    pub v_list: Array2<f64>,
+    pub m_list: Array1<f64>,
 }
 
 pub struct NBodyResults {
-    all_time: Array1<f64>,
-    all_r: Array3<f64>,
-    all_v: Array3<f64>,
-    all_ke: Array1<f64>,
-    all_pe: Array1<f64>,
-    all_te: Array1<f64>,
+    pub all_time: Array1<f64>,
+    pub all_r: Array3<f64>,
+    pub all_v: Array3<f64>,
+    pub all_ke: Array1<f64>,
+    pub all_pe: Array1<f64>,
+    pub all_te: Array1<f64>,
 }
 
 pub fn simulate_system(dataset: NBodySystem, dt: f64, max_time: f64, g: f64) -> NBodyResults {

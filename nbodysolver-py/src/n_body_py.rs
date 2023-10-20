@@ -1,4 +1,4 @@
-use nbodysolver::n_body_core;
+use nbodysolver::{n_body_core, n_body_wrapper};
 use ndarray::prelude::*;
 use numpy::{
     IntoPyArray, PyArray1, PyArray2, PyArray3, PyArrayLike1, PyArrayLike2, TypeMustMatch,
@@ -49,22 +49,34 @@ pub fn simulate_nbody_and_process_py<'py>(
     &'py PyArray1<f64>,
     &'py PyArray1<f64>,
 ) {
-    let (all_t, all_r, all_v, all_ke, all_pe, all_te) = n_body_core::simulate_nbody(
-        r_list.as_array(),
-        v_list.as_array(),
-        m_list.as_array(),
-        dt,
-        max_time,
-        g,
-    );
-    let proc_r = n_body_core::process_data_nbody(all_r).into_pyarray(py);
-    let proc_v = n_body_core::process_data_nbody(all_v).into_pyarray(py);
-    (
-        all_t.into_pyarray(py),
-        proc_r,
-        proc_v,
-        all_ke.into_pyarray(py),
-        all_pe.into_pyarray(py),
-        all_te.into_pyarray(py),
-    )
+    // let (all_t, all_r, all_v, all_ke, all_pe, all_te) = n_body_core::simulate_nbody(
+    //     r_list.to_owned_array(),
+    //     v_list.to_owned_array(),
+    //     m_list.to_owned_array(),
+    //     dt,
+    //     max_time,
+    //     g,
+    // );
+    // let proc_r = n_body_core::process_data_nbody(all_r).into_pyarray(py);
+    // let proc_v = n_body_core::process_data_nbody(all_v).into_pyarray(py);
+    // (
+    //     all_t.into_pyarray(py),
+    //     proc_r,
+    //     proc_v,
+    //     all_ke.into_pyarray(py),
+    //     all_pe.into_pyarray(py),
+    //     all_te.into_pyarray(py),
+    // )
+
+    let input_system = n_body_wrapper::NBodySystem {
+        r_list: r_list.to_owned_array(), 
+        v_list: v_list.to_owned_array(), 
+        m_list: m_list.to_owned_array()};
+    let results = n_body_wrapper::simulate_system(input_system, dt, max_time, g);
+    (results.all_time.into_pyarray(py), 
+    results.all_r.into_pyarray(py), 
+    results.all_v.into_pyarray(py), 
+    results.all_ke.into_pyarray(py), 
+    results.all_pe.into_pyarray(py), 
+    results.all_te.into_pyarray(py))
 }
