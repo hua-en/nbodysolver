@@ -16,3 +16,8 @@ ndarray-linalg = { workspace = true }
 num = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
+plotters = { workspace = true, optional = true }
+plotly = { workspace = true, optional = true }
+
+[features]
+plot = ["dep:plotters", "dep:plotly"]
